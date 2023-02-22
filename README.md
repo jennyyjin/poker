@@ -1,3 +1,3 @@
 # Final Project
 Team members:
-Jenny Jin (yj226) 
+Jenny Jin (yj226)  
