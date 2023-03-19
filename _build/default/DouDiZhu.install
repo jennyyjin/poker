@@ -1,8 +1,0 @@
-lib: [
-  "_build/install/default/lib/DouDiZhu/META"
-  "_build/install/default/lib/DouDiZhu/dune-package"
-  "_build/install/default/lib/DouDiZhu/opam"
-]
-bin: [
-  "_build/install/default/bin/DouDiZhu"
-]
