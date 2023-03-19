@@ -1,0 +1,4 @@
+(executable
+ (public_name DouDiZhu)
+ (name main)
+ (libraries DouDiZhu))
