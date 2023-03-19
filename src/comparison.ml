@@ -1,9 +1,3 @@
-exception Empty
-
-type choice =
-  | Continue of int list
-  | Skip
-
 (** [compare_card x y] compares two cards x and y, returns 1 if card x has a
     higher rank than the card y, returns -1 if x has a smaller rank than y,
     returns 0 if they have the same rank. Note the jokers are the greatest *)
