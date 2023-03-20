@@ -1,8 +1,12 @@
+open Comparison
+
 type card =
   | Spade of int
   | Heart of int
   | Diamond of int
   | Club of int
+  | Joker1
+  | Joker2
 
 (** [card_list] is the 54 cards in a poker deck and we name them from 1 to 54 *)
 let card_list = List.init 54 (fun i -> i + 1)
