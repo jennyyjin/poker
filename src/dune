@@ -1,2 +1,3 @@
 (library
- (name poker))
+ (name poker)
+ (public_name Poker))
