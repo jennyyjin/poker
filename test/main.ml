@@ -2,7 +2,7 @@ open OUnit2
 open Poker
 open Draw
 open Comparison
-open Assign_card
+open Assign
 
 (**Test Methods in assign_card.ml*)
 let split_in_half_test (name : string) (card_list : 'a list)

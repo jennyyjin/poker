@@ -1,4 +1,4 @@
-open Assign_card
+open Assign
 
 exception Empty
 exception InvaidDouble of int * int
