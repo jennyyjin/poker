@@ -8,16 +8,6 @@ type choice =
   | Continue of int list
   | Skip
 
-open Assign_card
-
-type choice =
-  | Continue of int list
-  | Skip
-
-exception Empty
-exception InvaidDouble of int * int
-exception InvaidForm
-
 (** [compare_card x y] compares two cards x and y, returns 1 if card x has a
     higher rank than the card y, -1 if x has a smaller rank than y, and 0 if
     they have the same rank. Note that jokers are the largest *)
@@ -144,22 +134,16 @@ let first_two_element lst =
 (** [double_helper this other] returns Continue [card] if there is a card in
     [this] with a greater rank than the opponent’s card, returns Skip if there
     are no cards greater. Requries that other is a valid double card] *)
-let double_helper (this : int list) (other : int list) =
-  let dup_list =
-    single_greater_lst this (List.hd other) |> remove_non_duplicates
-  in
-  if dup_list <> [] then
-    let double_lst = dup_list |> sort |> first_two_element in
-    Continue double_lst
-  else Skip
+(* let double_helper (this : int list) (other : int list) = let dup_list =
+   single_greater_lst this (List.hd other) |> remove_non_duplicates in if
+   dup_list <> [] then let double_lst = dup_list |> sort |> first_two_element in
+   Continue double_lst else Skip *)
 
 (** [double this other] assures that the other's card is a double, returns
     Continue [card] if there is a card in this with a greater rank than the
     opponent’s [card], returns Skip if there are no cards greater. If other's
     card is a not valid two card combo, raise \[InvaidDouble(card1, card2)]\. If
     other's deck is not a two card combo, raise \[InvaidForm]\ *)
-let double (this : int list) (other : int list) =
-  match other with
-  | [ h; t ] ->
-      if h <> t then raise (InvaidDouble (h, t)) else double_helper this other
-  | _ -> raise InvaidForm
+(* let double (this : int list) (other : int list) = match other with | [ h; t ]
+   -> if h <> t then raise (InvaidDouble (h, t)) else double_helper this other |
+   _ -> raise InvaidForm *)
