@@ -21,8 +21,7 @@ let compare_card x y =
     let y_num = y mod 13 in
     if x_num < y_num then -1 else if x_num > y_num then 1 else 0
 
-(** [sort cards] sorts the list of cards in ascending order based on rank of the
-    card *)
+(** [sort cards] sorts the list of cards in ascending order based on card rank *)
 let sort (cards : int list) : int list = List.sort compare_card cards
 
 (** [single this other] returns the card to put down in response to what the
