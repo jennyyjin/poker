@@ -23,25 +23,7 @@ let compare_card x y =
     if x_num < y_num then -1 else if x_num > y_num then 1 else 0
 
 (** [sort cards] sorts the list of cards in ascending order based on card rank *)
-let sorted (cards : int list) : int list = List.sort compare_card cards
-
-let sorted_uniq (cards : int list) : int list =
-  List.sort_uniq compare_card cards
-
-(** [remove_joker lst] returns a list of cards with jokers removed *)
-let rec remove_joker (lst : int list) =
-  match lst with
-  | [] -> []
-  | h :: t -> if h = 53 || h = 54 then remove_joker t else h :: remove_joker t
-
-(** [int_list_to_string lst] converts a list of integers to a string in
-    ascending order without duplicates *)
-let int_list_to_string (lst : int list) : string =
-  let str_list = List.map string_of_int (sorted_uniq lst) in
-  String.concat "" str_list
-
-(** [char_to_int c] converts a char to an int *)
-let char_to_int (c : char) : int = int_of_char c - int_of_char '0'
+let sort (cards : int list) : int list = List.sort compare_card cards
 
 (** [single this other] returns the card to put down in response to what the
     other player just put down, returns Continue [card] if there is a card in
@@ -76,23 +58,18 @@ let rec straight (this : int list) (other : int list) : choice =
       then Continue [ c1; c2; c3; c4; c5 ]
       else straight (c2 :: c3 :: c4 :: c5 :: t) other
 
-(** [two lst] returns [Continue card] where card is a list of four cards of the
-    same rank if there is a two-of-a-kind in [lst] and [Skip] otherwise *)
-let rec double (lst : int list) : choice =
-  match sorted (remove_joker lst) with
-  | [] | [ _ ] -> Skip
-  | c1 :: c2 :: t ->
-      if c1 mod 13 = c2 mod 13 then Continue [ c1; c2 ] else double (c2 :: t)
+(** [remove_non_duplicates] removes all the non duplicates from the lists*)
+let rec remove_non_duplicates = function
+  | [] -> []
+  | x :: xs ->
+      if List.mem x xs then x :: x :: remove_non_duplicates xs
+      else remove_non_duplicates xs
 
-(** [three lst] returns [Continue card] where card is a list of four cards of
-    the same rank if there is a three-of-a-kind in [lst] and [Skip] otherwise *)
-let rec triplet (lst : int list) : choice =
-  match sorted (remove_joker lst) with
-  | [] | [ _ ] | [ _; _ ] -> Skip
-  | c1 :: c2 :: c3 :: t ->
-      if c1 mod 13 = c2 mod 13 && c2 mod 13 = c3 mod 13 then
-        Continue [ c1; c2; c3 ]
-      else triplet (c2 :: c3 :: t)
+(** [first_two_element lst] returns first two elements of the list*)
+let first_two_element lst =
+  match lst with
+  | x :: y :: _ -> [ x; y ]
+  | _ -> []
 
 (** [four lst] returns [Continue card] where card is a list of four cards of the
     same rank if there is a four-of-a-kind in [lst] and [Skip] otherwise *)
