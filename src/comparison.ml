@@ -9,8 +9,8 @@ type choice =
   | Skip
 
 (** [compare_card x y] compares two cards x and y, returns 1 if card x has a
-    higher rank than the card y, returns -1 if x has a smaller rank than y,
-    returns 0 if they have the same rank. Note the jokers are the greatest *)
+    higher rank than the card y, -1 if x has a smaller rank than y, and 0 if
+    they have the same rank. Note that jokers are the largest *)
 let compare_card x y =
   if x = 54 then 1
   else if y = 54 then -1
@@ -30,10 +30,10 @@ let sorted_uniq (cards : int list) : int list =
   List.sort_uniq compare_card cards
 
 (** [single this other] returns a single card to put down in response to the
-    single card the other player just put down, returns [Continue card] where
+    single card the other player just put down. Returns [Continue card] where
     card is the list of card to put down if there is a card in [this] with a
-    greater rank than the opponent's card, returns [Skip] if there are no cards
-    greater. Precondition: [this] is not empty, [other] contains only one
+    greater rank than the opponent's card and [Skip] if there are no cards
+    greater. Requires: [this] is not empty, and [other] contains only one
     integer *)
 let rec single (this : int list) (other : int list) : choice =
   match this with
@@ -58,10 +58,10 @@ let int_list_to_string (lst : int list) : string =
 let char_to_int (c : char) : int = int_of_char c - int_of_char '0'
 
 (** [straight this other] returns a straight to put down in response to the
-    straight the other player just put down, returns [Continue card] where card
+    straight the other player just put down. Returns [Continue card] where card
     is the list of cards to put down if there is a straight in [this] with
-    greater ranks than the opponent's straight, returns [Skip] if there are no
-    cards greater. Precondition: [this] is not empty, [other] is a list of five
+    greater ranks than the opponent's straight and [Skip] if there are no cards
+    greater. Requires: [this] is not empty, and [other] is a list of five
     consecutive numbers with no duplicates *)
 let rec straight (this : int list) (other : int list) : choice =
   match sorted_uniq (remove_joker this) with
@@ -78,3 +78,21 @@ let rec straight (this : int list) (other : int list) : choice =
            = (c5 mod 13) - (char_to_int (int_list_to_string other).[4] mod 13)
       then Continue [ c1; c2; c3; c4; c5 ]
       else straight (c2 :: c3 :: c4 :: c5 :: t) other
+
+(** [four lst] returns [Continue card] where card is a list of four cards of the
+    same rank if there is a four-of-a-kind in [lst] and [Skip] otherwise *)
+let rec four (lst : int list) : choice =
+  match sorted (remove_joker lst) with
+  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] -> Skip
+  | c1 :: c2 :: c3 :: c4 :: t ->
+      if c1 mod 13 = c2 mod 13 && c2 mod 13 = c3 mod 13 && c3 mod 13 = c4 mod 13
+      then Continue [ c1; c2; c3; c4 ]
+      else four (c2 :: c3 :: c4 :: t)
+
+(** [joker_pair lst] returns [Continue card] where card is a list of two jokers
+    if there are two jokers in [lst] and [Skip] otherwise *)
+let rec joker_pair (lst : int list) : choice =
+  match sorted lst with
+  | [] | [ _ ] -> Skip
+  | _ :: [ 53; 54 ] -> Continue [ 53; 54 ]
+  | _ -> Skip
