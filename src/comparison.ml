@@ -42,14 +42,20 @@ let rec single (this : int list) (other : int list) : choice =
       if compare_card h (List.hd other) = 1 then Continue [ h ]
       else single t other
 
+(** [remove_joker lst] returns a list of cards with jokers removed *)
+let rec remove_joker (lst : int list) =
+  match lst with
+  | [] -> []
+  | h :: t -> if h = 53 || h = 54 then remove_joker t else h :: remove_joker t
+
 (** [int_list_to_string lst] converts a list of integers to a string in
     ascending order without duplicates *)
-let int_list_to_string lst =
+let int_list_to_string (lst : int list) : string =
   let str_list = List.map string_of_int (sorted_uniq lst) in
   String.concat "" str_list
 
 (** [char_to_int c] converts a char to an int *)
-let char_to_int c = int_of_char c - int_of_char '0'
+let char_to_int (c : char) : int = int_of_char c - int_of_char '0'
 
 (** [straight this other] returns a straight to put down in response to the
     straight the other player just put down, returns [Continue card] where card
@@ -58,17 +64,17 @@ let char_to_int c = int_of_char c - int_of_char '0'
     cards greater. Precondition: [this] is not empty, [other] is a list of five
     consecutive numbers with no duplicates *)
 let rec straight (this : int list) (other : int list) : choice =
-  match sorted_uniq this with
+  match sorted_uniq (remove_joker this) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Skip
   | c1 :: c2 :: c3 :: c4 :: c5 :: t ->
       if
-        c1 - char_to_int (int_list_to_string other).[0]
-        = c2 - char_to_int (int_list_to_string other).[1]
-        && c2 - char_to_int (int_list_to_string other).[1]
-           = c3 - char_to_int (int_list_to_string other).[2]
-        && c3 - char_to_int (int_list_to_string other).[2]
-           = c4 - char_to_int (int_list_to_string other).[3]
-        && c4 - char_to_int (int_list_to_string other).[3]
-           = c5 - char_to_int (int_list_to_string other).[4]
+        (c1 mod 13) - (char_to_int (int_list_to_string other).[0] mod 13)
+        = (c2 mod 13) - (char_to_int (int_list_to_string other).[1] mod 13)
+        && (c2 mod 13) - (char_to_int (int_list_to_string other).[1] mod 13)
+           = (c3 mod 13) - (char_to_int (int_list_to_string other).[2] mod 13)
+        && (c3 mod 13) - (char_to_int (int_list_to_string other).[2] mod 13)
+           = (c4 mod 13) - (char_to_int (int_list_to_string other).[3] mod 13)
+        && (c4 mod 13) - (char_to_int (int_list_to_string other).[3] mod 13)
+           = (c5 mod 13) - (char_to_int (int_list_to_string other).[4] mod 13)
       then Continue [ c1; c2; c3; c4; c5 ]
       else straight (c2 :: c3 :: c4 :: c5 :: t) other
