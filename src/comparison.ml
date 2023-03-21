@@ -8,6 +8,7 @@ exception InvaidForm
 type choice =
   | Continue of int list
   | Skip
+  | Other
 
 (** [compare_card x y] compares two cards x and y, returns 1 if card x has a
     higher rank than the card y, -1 if x has a smaller rank than y, and 0 if
@@ -31,12 +32,12 @@ let sorted_uniq (cards : int list) : int list =
 (** [single this other] returns a single card to put down in response to the
     single card the other player just put down. Returns [Continue card] where
     card is the list of card to put down if there is a card in [this] with a
-    greater rank than the opponent's card and [Skip] if there are no cards
+    greater rank than the opponent's card and [Other] if there are no cards
     greater. Requires: [this] is not empty, and [other] contains only one
     integer *)
 let rec single (this : int list) (other : int list) : choice =
   match this with
-  | [] -> Skip
+  | [] -> Other
   | h :: t ->
       if compare_card h (List.hd other) = 1 then Continue [ h ]
       else single t other
@@ -70,12 +71,12 @@ let rec single (this : int list) (other : int list) : choice =
 (** [straight this other] returns a straight to put down in response to the
     straight the other player just put down. Returns [Continue card] where card
     is the list of cards to put down if there is a straight in [this] with
-    greater ranks than the opponent's straight and [Skip] if there are no cards
+    greater ranks than the opponent's straight and [Other] if there are no cards
     greater. Requires: [this] is not empty, and [other] is a list of five
     consecutive numbers with no duplicates *)
 let rec straight (this : int list) (other : int list) : choice =
   match sorted_uniq (remove_joker this) with
-  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Skip
+  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Other
   | c1 :: c2 :: c3 :: c4 :: c5 :: t ->
       if
         (c1 mod 13) - (char_to_int (int_list_to_string other).[0] mod 13)
@@ -108,10 +109,10 @@ let rec triplet (lst : int list) : choice =
       else triplet (c2 :: c3 :: t)
 
 (** [four lst] returns [Continue card] where card is a list of four cards of the
-    same rank if there is a four-of-a-kind in [lst] and [Skip] otherwise *)
+    same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
 let rec four (lst : int list) : choice =
   match sorted (remove_joker lst) with
-  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] -> Skip
+  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] -> Other
   | c1 :: c2 :: c3 :: c4 :: t ->
       if c1 mod 13 = c2 mod 13 && c2 mod 13 = c3 mod 13 && c3 mod 13 = c4 mod 13
       then Continue [ c1; c2; c3; c4 ]
