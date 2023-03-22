@@ -23,4 +23,4 @@ val triple : int list -> int list -> choice
 val quad : int list -> choice
 val joker_pair : int list -> choice
 val triple_p_double : int list -> int list -> choice
-val compare : int list -> int list -> choice
+val play : int list -> int list -> choice

@@ -9,9 +9,9 @@ type choice =
   | Skip
   | Other
 
-(** [compare_card x y] compares two cards x and y, returns 1 if card x has a
-    higher rank than the card y, -1 if x has a smaller rank than y, and 0 if
-    they have the same rank. Note that jokers are the largest *)
+(** [compare_card x y] compares two cards [x] and [y], returns 1 if card [x] has
+    a higher rank than the card [y], -1 if [x] has a smaller rank than [y], and
+    0 if they have the same rank. Note that jokers are the largest *)
 let compare_card x y =
   if x = 53 then 1
   else if y = 53 then -1
@@ -22,9 +22,11 @@ let compare_card x y =
     let y_num = y mod 13 in
     if x_num < y_num then -1 else if x_num > y_num then 1 else 0
 
-(** [sort cards] sorts the list of cards in ascending order based on card rank *)
+(** [sorted cards] sorts the list of cards in ascending order based on card rank *)
 let sorted (cards : int list) : int list = List.sort compare_card cards
 
+(** [sorted_uniq cards] sorts the list of cards in ascending order based on card
+    rank without duplicates *)
 let sorted_uniq (cards : int list) : int list =
   List.sort_uniq compare_card cards
 
@@ -163,7 +165,9 @@ let rec triple_p_double (this : int list) (other : int list) : choice =
       | [] | [ _ ] -> Other
       | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
 
-let compare (this : int list) (other : int list) : choice =
+(** [play this other] returns [Continue card] where card is the cards to put
+    down and [Other] otherwise *)
+let play (this : int list) (other : int list) : choice =
   let size = List.length other in
   match size with
   | 0 -> Continue [ List.hd this ]
