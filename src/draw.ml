@@ -36,9 +36,8 @@ let bottom_board =
   "=============================================================="
 
 let print_board (ai_cards : int list) (player_cards : int list)
-    (ai_prev : int list) (play_prev : int list) =
+    (prev_cards : int list) =
   top_board ^ "\n"
-  ^ Printf.sprintf "Player1 number of left cards: %i" (List.length ai_cards)
-  ^ "\n" ^ "Player1 last output: " ^ print_cards ai_prev ^ "\n"
-  ^ "Your last output: " ^ print_cards play_prev ^ "\n" ^ "Your cards left: "
-  ^ print_cards player_cards ^ "\n" ^ bottom_board
+  ^ Printf.sprintf "Player1's number of cards left: %i" (List.length ai_cards)
+  ^ "\n" ^ "Cards just put down: " ^ print_cards prev_cards ^ "\n"
+  ^ "Your cards in hand: " ^ print_cards player_cards ^ "\n" ^ bottom_board
