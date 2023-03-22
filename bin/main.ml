@@ -4,11 +4,16 @@ open Comparison
 open Assign
 open Play
 
-let cards_group = split_in_half scrambled_list
-let ai_cards = sorted (fst cards_group)
-let player_cards = sorted (snd cards_group)
+(** [card_list] is the 54 cards in a poker deck and we name them from 1 to 54 *)
+(* let make_card_list = List.init 54 (fun i -> i) *)
+(** [scrambled_list] is the 54 cards in a poker deck and we name them from 1 to
+    54 and scramble them up*)
+(* let make_scrambled_list = List.sort (fun _ _ -> Random.int 3 - 1) make_card_list *)
+(* 
+let cards_group = split_in_half make_scrambled_list *)
+(* let ai_cards = sorted (fst cards_group)
+let player_cards = sorted (snd cards_group) *)
 let prev_cards = []
-let begin_board = Draw.print_board ai_cards player_cards prev_cards
 let turn = 0
 
 (** [check_empty str] is a boolean of whether or not [str] is an empty string *)
@@ -57,7 +62,10 @@ let main () =
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWelcome to Poker.\n";
   (* print_string begin_board; *)
   print_endline " ";
-  play_game ai_cards player_cards prev_cards turn
+  let cards_group = split_in_half scrambled_list in 
+  let ai_cards = sorted (fst cards_group) in 
+  let player_cards = sorted (snd cards_group) in 
+    play_game ai_cards player_cards prev_cards turn
 (* print_string second_board *)
 (* print_string (String.concat " " ho); print_endline " "; print_string
    (String.concat " " he); print_endline " "; print_string (String.concat " "

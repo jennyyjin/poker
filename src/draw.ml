@@ -30,7 +30,7 @@ let print_card (card : int) =
 let print_cards (cards : int list) =
   String.concat " " (List.map print_card cards)
 
-let guide_player = "\n\nIt's your term!\n"
+let guide_player = "\n\nIt's your turn!\n"
 let guide_ai = "\n\nUpdated Game Board!\n"
 let top_ai = "--------------------------------------------------------------"
 let bottom_ai = "--------------------------------------------------------------"
