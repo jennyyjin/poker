@@ -17,7 +17,9 @@ let check_empty (str : string) = String.length str <> 0
 (** [play_game ai_cards player_cards prev_cards turn] runs the poker game,
     allowing player to put down cards *)
 let rec play_game ai_cards player_cards prev_cards turn =
-  print_string (Draw.print_board ai_cards player_cards prev_cards);
+  if turn = 0 then
+    print_string (Draw.print_board ai_cards player_cards prev_cards)
+  else print_string (Draw.print_ai_board ai_cards player_cards prev_cards);
   if turn = 0 then
     print_string
       "\nPlease input the indices of the cards you want to put down: \n";
@@ -27,7 +29,7 @@ let rec play_game ai_cards player_cards prev_cards turn =
         (fun e -> int_of_string e)
         (List.filter check_empty (String.split_on_char ' ' (read_line ())))
     in
-    let prev_cards = input in
+    let prev_cards = index_to_num player_cards input in
     let player_cards = update_cards player_cards input in
     play_game ai_cards player_cards prev_cards 1
   else
@@ -37,7 +39,7 @@ let rec play_game ai_cards player_cards prev_cards turn =
       | Continue cards -> cards
     in
     let prev_cards = input in
-    let ai_cards = update_cards ai_cards input in
+    let ai_cards = update_ai_cards ai_cards input in
     play_game ai_cards player_cards prev_cards 0
 
 (* match read_line () with | exception End_of_file -> () | _ -> let player_cards

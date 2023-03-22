@@ -3,7 +3,7 @@ open Poker
 open Draw
 open Comparison
 open Assign
-
+open Play
 (**Test Methods in assign_card.ml*)
 let split_in_half_test (name : string) (card_list : 'a list)
     (expected_output : 'a list * 'a list) : test =
@@ -153,9 +153,43 @@ let compare_card_tests =
 let comparison_tests =
   [ "test suite for adventure" >::: List.flatten [ compare_card_tests ] ]
 
+  (**Test Methods in play.ml*)
+let update_ai_card_test (name : string) (current_cards : int list) (output_cards : int list)
+    (expected_output : int list) : test =
+  name >:: fun _ -> assert_equal (update_ai_cards current_cards output_cards) expected_output
+
+let update_ai_card_tests =
+  [
+    update_ai_card_test "A" [1;2;3] [2] [1;3];
+    update_ai_card_test "A" [1;2;3;7;8] [2] [1;3;7;8];
+  ]
+
+  let update_card_test (name : string) (current_cards : int list) (output_cards : int list)
+    (expected_output : int list) : test =
+  name >:: fun _ -> assert_equal (update_cards current_cards output_cards) expected_output
+
+let update_card_tests =
+  [
+    update_card_test "A" [1;2;3] [2] [1;2];
+    update_card_test "A" [1;2;3;7;8] [2] [1;2;7;8];
+  ]
+
+let index_to_num_test (name : string) (current_cards : int list) (output_cards : int list)
+    (expected_output : int list) : test =
+  name >:: fun _ -> assert_equal (index_to_num current_cards output_cards) expected_output
+
+let index_to_num_tests =
+  [
+    index_to_num_test "A" [1;2;3] [2] [3];
+    index_to_num_test "A" [1;2;3;7;8] [1;3] [2;7];
+  ]
+
+let play_tests =
+  [ "test suite for adventure" >::: List.flatten [ update_ai_card_tests; update_card_tests;index_to_num_tests] ]
+
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
-  >::: List.flatten [ comparison_tests; assign_card_tests ]
+  >::: List.flatten [assign_card_tests ; comparison_tests; play_tests ]
 
 let _ = run_test_tt_main suite
