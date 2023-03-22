@@ -34,7 +34,7 @@ let rec play_game ai_cards player_cards prev_cards turn =
     play_game ai_cards player_cards prev_cards 1
   else
     let input =
-      match Comparison.single ai_cards prev_cards with
+      match Comparison.compare ai_cards prev_cards with
       | Skip | Other -> []
       | Continue cards -> cards
     in

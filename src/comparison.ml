@@ -163,3 +163,13 @@ let rec triple_p_double (this : int list) (other : int list) : choice =
             if compare_card c1 (List.hd other) = 1 then Continue [ c1; c2; c3 ]
             else triple t other
           else Other)
+
+let compare (this : int list) (other : int list) : choice =
+  let size = List.length other in
+  match size with
+  | 0 | 1 -> single this other
+  | 2 -> double this other
+  | 3 -> triple this other
+  | 4 -> quad other
+  | 5 -> triple_p_double this other
+  | _ -> Other
