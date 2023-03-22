@@ -1,4 +1,5 @@
 open Assign
+open Play
 
 exception Empty
 exception Wrong
@@ -152,22 +153,21 @@ let rec joker_pair (lst : int list) : choice =
     four cards of the same rank if there is a two-of-a-kind in [lst] and [Other]
     otherwise *)
 let rec triple_p_double (this : int list) (other : int list) : choice =
-  match this with
-  | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Other
-  | _ -> (
-      match triple_helper this with
-      | [] | [ _ ] | [ _; _ ] -> Other
-      | c1 :: c2 :: c3 :: t ->
-          if List.hd (double_lst this other) <> List.hd (triple_lst this other)
-          then
-            if compare_card c1 (List.hd other) = 1 then Continue [ c1; c2; c3 ]
-            else triple t other
-          else Other)
+  let t_cards = [ List.nth other 0; List.nth other 1; List.nth other 2 ] in
+  match triple this t_cards with
+  | Skip -> Other
+  | Other -> Other
+  | Continue cards -> (
+      let rest_cards = update_ai_cards this cards in
+      match double_helper rest_cards with
+      | [] | [ _ ] -> Other
+      | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
 
 let compare (this : int list) (other : int list) : choice =
   let size = List.length other in
   match size with
-  | 0 | 1 -> single this other
+  | 0 -> Continue [ List.hd this ]
+  | 1 -> single this other
   | 2 -> double this other
   | 3 -> triple this other
   | 4 -> quad other

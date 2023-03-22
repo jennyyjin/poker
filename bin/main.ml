@@ -17,6 +17,12 @@ let check_empty (str : string) = String.length str <> 0
 (** [play_game ai_cards player_cards prev_cards turn] runs the poker game,
     allowing player to put down cards *)
 let rec play_game ai_cards player_cards prev_cards turn =
+  if List.length ai_cards = 0 then
+    ANSITerminal.print_string [ ANSITerminal.green ] "\n\n Sorry, you lost! \n"
+  else if List.length player_cards = 0 then
+    ANSITerminal.print_string [ ANSITerminal.red ]
+      "\n\n Congratulations! You won! \n";
+  if List.length ai_cards = 0 || List.length player_cards = 0 then exit 0;
   if turn = 0 then
     print_string (Draw.print_board ai_cards player_cards prev_cards)
   else print_string (Draw.print_ai_board ai_cards player_cards prev_cards);
