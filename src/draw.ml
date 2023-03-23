@@ -25,6 +25,8 @@ let print_card (card : int) =
     Printf.sprintf "|%sQ|" (number_to_suit card)
   else if number_to_card card = 13 then
     Printf.sprintf "|%sK|" (number_to_suit card)
+  else if number_to_card card = 1 then
+    Printf.sprintf "|%sA|" (number_to_suit card)
   else Printf.sprintf "|%s%i%!|" (number_to_suit card) (number_to_card card)
 
 let print_cards (cards : int list) =
@@ -50,5 +52,5 @@ let print_ai_board (ai_cards : int list) (player_cards : int list)
     (prev_cards : int list) =
   guide_ai ^ top_ai ^ "\n"
   ^ Printf.sprintf "Player1's number of cards left: %i" (List.length ai_cards)
-  ^ "\n" ^ "Cards put down by your: " ^ print_cards prev_cards ^ "\n"
+  ^ "\n" ^ "Cards put down by you: " ^ print_cards prev_cards ^ "\n"
   ^ "Your cards in hand: " ^ print_cards player_cards ^ "\n" ^ bottom_ai
