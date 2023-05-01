@@ -49,9 +49,15 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
             (fun e -> int_of_string e)
             (List.filter check_empty (String.split_on_char ' ' user_input))
         in
-        let prev_cards = index_to_num player_cards input in
-        let player_cards = update_cards player_cards input in
-        play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
+        let player_placed_cards = index_to_num player_cards input in
+        let checkvalid =
+          Comparison.check_valid player_placed_cards prev_cards
+        in
+        if checkvalid = false then raise Format
+        else
+          let prev_cards = index_to_num player_cards input in
+          let player_cards = update_cards player_cards input in
+          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
     else if turn = 1 then
       let input =
         match Comparison.play fst_ai_cards prev_cards with
@@ -99,9 +105,11 @@ let main () =
   let deck = Assign.scrambled_list in
   let cards_group = split_in_three deck in
   let a, b, c = cards_group in
-  let fst_ai_cards = sorted a in
-  let snd_ai_card = sorted b in
-  let player_cards = sorted c in
-  play_game fst_ai_cards snd_ai_card player_cards prev_cards turn
+  let player_cards = sorted a in
+  let fst_ai_cards = sorted b in
+  let snd_ai_cards = sorted c in
+  let prev_cards = [] in
+  let turn = 0 in
+  play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
 
 let () = main ()

@@ -6,15 +6,12 @@ type card =
   | Diamond of int
   | Club of int
 
-(** [card_list] is the 54 cards in a poker deck and we name them from 1 to 54 *)
 let card_list = List.init 54 (fun i -> i)
 
-(**[random n] generate a randome integer with range 0(inclusive) to n(exclusive) *)
 let random n =
   Random.self_init ();
   Random.int n
 
-(** [shuffling] simulates shuffling cards in poker*)
 let rec shuffling rest_cards current_deck =
   let num = List.length rest_cards in
   match num with
@@ -38,8 +35,6 @@ let rec split_in_half lst =
       let first_half, second_half = split_in_half rest in
       (x :: first_half, y :: second_half)
 
-(** [split_in_half lst] splits up the cards into three decks, the first two
-    decks each have 17 cards while the last one have 20 cards*)
 let rec split_in_three lst =
   match lst with
   | [] -> ([], [], [])
