@@ -220,24 +220,29 @@ let compare_same_type (this : int list) (other : int list) =
       else if diff2 = -1 then LT
       else if diff2 = 1 then GT
       else EQ
-  | Empty -> EQ
+  | Empty -> GT
   | _ -> IV
 
 let compare_diff_type (this : int list) (other : int list) =
   let cardstype = getcardtype this in
-  match cardstype with
-  | Single | Double | Triple | Straight | Fullhouse -> IV
-  | Bomb -> if getcardtype other = Joker then LT else GT
-  | Joker -> GT
-  | Empty -> LT
-  | Invalid -> IV
+  let cardstypeother = getcardtype other in
+  if cardstypeother = Empty && cardstype != Invalid then GT
+  else
+    match cardstype with
+    | Single | Double | Triple | Straight | Fullhouse -> IV
+    | Bomb -> if getcardtype other = Joker then LT else GT
+    | Joker -> GT
+    | Empty -> GT
+    | Invalid -> IV
 
 let check_valid (cards1 : int list) (cards2 : int list) =
   let samecard = check_same_type cards1 cards2 in
   match samecard with
   | true ->
+      let x = print_endline "true" in
       let diff = compare_same_type cards1 cards2 in
       if diff = GT then true else false
   | false ->
+      let y = print_endline "false" in
       let diff = compare_diff_type cards1 cards2 in
       if diff = GT then true else false

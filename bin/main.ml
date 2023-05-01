@@ -81,7 +81,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
       play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
   with _ ->
     ANSITerminal.print_string [ ANSITerminal.red ]
-      "\nThe format of your input is invalid. Please try again.";
+      "\nYour input is invalid. Please try again.";
     play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
 
 let main () =
