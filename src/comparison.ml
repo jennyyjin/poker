@@ -27,6 +27,10 @@ type cardstype =
   | Invalid
   | Empty
 
+(** [compare_card x y] is a comparison function that output either -1, 0 or 1 to
+    denote the relative rank between cards. So we denote 0 and anything mod 13
+    to 0 as the samllest rank of the deck, and 53 as the largest Joker in the
+    deck *)
 let compare_card x y =
   if x = 53 then 1
   else if y = 53 then -1

@@ -6,6 +6,8 @@ type card =
   | Diamond of int
   | Club of int
 
+(** [card_list] is a funciton that produce a list of integer from 1 to 54
+    inclusive*)
 let card_list = List.init 54 (fun i -> i)
 
 let random n =
