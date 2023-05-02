@@ -142,17 +142,6 @@ let rec triple_p_double (this : int list) (other : int list) : choice =
       | [] | [ _ ] -> Other
       | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
 
-let play (this : int list) (other : int list) : choice =
-  let size = List.length other in
-  match size with
-  | 0 -> Continue [ List.hd this ]
-  | 1 -> single this other
-  | 2 -> double this other
-  | 3 -> triple this other
-  | 4 -> quad other
-  | 5 -> triple_p_double this other
-  | _ -> Other
-
 let getcardtype (this : int list) : cardstype =
   let sort_this = sorted this in
   let size = List.length sort_this in
@@ -199,6 +188,20 @@ let getcardtype (this : int list) : cardstype =
         else Invalid
       else Invalid
   | _ -> Invalid
+
+let play (this : int list) (other : int list) : choice =
+  let size = List.length other in
+  match size with
+  | 0 -> Continue [ List.hd this ]
+  | 1 -> single this other
+  | 2 -> double this other
+  | 3 -> triple this other
+  | 4 -> quad other
+  | 5 ->
+      let cardtype = getcardtype other in
+      if cardtype = Fullhouse then triple_p_double this other
+      else straight this other
+  | _ -> Other
 
 let check_same_type (this : int list) (other : int list) =
   let cards1 = getcardtype this in

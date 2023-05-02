@@ -105,9 +105,9 @@ let main () =
   let deck = Assign.scrambled_list in
   let cards_group = split_in_three deck in
   let a, b, c = cards_group in
-  let player_cards = sorted a in
-  let fst_ai_cards = sorted b in
-  let snd_ai_cards = sorted c in
+  let fst_ai_cards = sorted a in
+  let snd_ai_cards = sorted b in
+  let player_cards = sorted c in
   let prev_cards = [] in
   let turn = 0 in
   play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn

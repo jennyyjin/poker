@@ -27,7 +27,9 @@ let print_cards (cards : int list) =
 let guide_player = "\n\nIt's your turn!\n"
 
 (** Guide on top of the board for AIs's turn*)
-let guide_ai = "\n\nUpdated Game Board!\n"
+let guide_ai1 = "\n\nIt's Player 1 turn!\n"
+
+let guide_ai2 = "\n\nIt's Player 2 turn!\n"
 
 (** Board Top*)
 let top_ai = "--------------------------------------------------------------"
@@ -65,7 +67,7 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     first AI's turn*)
 let print_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     (player_cards : int list) (prev_cards : int list) =
-  guide_ai ^ top_ai ^ "\n"
+  guide_ai1 ^ top_ai ^ "\n"
   ^ Printf.sprintf "Player1's number of cards left: %i"
       (List.length fst_ai_cards)
   ^ "\n"
@@ -79,8 +81,9 @@ let print_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     it's second AI's turn*)
 let print_snd_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     (player_cards : int list) (prev_cards : int list) =
-  guide_ai ^ top_ai ^ "\n"
-  ^ Printf.sprintf "Card on Board: %i" (List.length fst_ai_cards)
+  guide_ai2 ^ top_ai ^ "\n"
+  ^ Printf.sprintf "Player1's number of cards left: %i"
+      (List.length fst_ai_cards)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
