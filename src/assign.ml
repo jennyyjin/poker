@@ -24,8 +24,8 @@ let rec shuffling rest_cards current_deck =
       let rest_cards = update_ai_cards rest_cards [ chosen_card ] in
       shuffling rest_cards current_deck @ [ chosen_card ]
 
-(** [scrambled_list] is the 54 cards in a poker deck and we name them from 1 to
-    54 and scramble them up*)
+(** [scrambled_list] is the 54 cards in a poker deck and we name them from 0 to
+    53 and scramble them up*)
 let scrambled_list = List.sort (fun _ _ -> random 3 - 1) card_list
 
 (** [split_in_half lst] splits up the cards into two decks in which the fst gets

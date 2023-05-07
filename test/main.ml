@@ -78,8 +78,47 @@ let compare_card_tests =
     compare_card_test "compare_card 0 39 is 0" 0 39 0;
   ]
 
+let single_test (name : string) (card1 : int list) (card2 : int list)
+    (expected_output : choice) : test =
+  name >:: fun _ -> assert_equal (single card1 card2) expected_output
+
+let single_tests =
+  [
+    single_test
+      "When you have smaller deck than then oppoents, you cannot return a card "
+      [ 1 ] [ 4 ] Other;
+    single_test
+      "When you have smaller deck than then oppoents, you cannot return a card "
+      [ 1; 2; 3 ] [ 4 ] Other;
+    single_test
+      "When you have a deck greater than the oppoents, you can continue with \
+       that deck"
+      [ 4; 5; 6 ] [ 1 ] (Continue [ 4 ]);
+  ]
+
+let double_test (name : string) (card1 : int list) (card2 : int list)
+    (expected_output : choice) : test =
+  name >:: fun _ -> assert_equal (double card1 card2) expected_output
+
+let double_tests = []
+
+let triple_test (name : string) (card1 : int list) (card2 : int list)
+    (expected_output : choice) : test =
+  name >:: fun _ -> assert_equal (triple card1 card2) expected_output
+
+let triple_tests = []
+
+let quad_test (name : string) (card1 : int list) (expected_output : choice) :
+    test =
+  name >:: fun _ -> assert_equal (quad card1) expected_output
+
+let quad_tests = []
+
 let comparison_tests =
-  [ "test suite for compare_card" >::: List.flatten [ compare_card_tests ] ]
+  [
+    "test suite for compare_card"
+    >::: List.flatten [ compare_card_tests; single_tests ];
+  ]
 
 (**[string_of_int_list lst] is the printer functions that print out the result
    of the update_ai_card_test function that helps with debugging *)
