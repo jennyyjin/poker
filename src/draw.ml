@@ -7,6 +7,8 @@ let number_to_suit (card_number : int) = Helper.number_to_suit card_number
 let print_card (card_number : int) =
   if number_to_card card_number = 0 then
     Printf.sprintf "|%s|" (number_to_suit card_number)
+  else if number_to_card card_number = 10 then
+    Printf.sprintf "|%sX|" (number_to_suit card_number)
   else if number_to_card card_number = 11 then
     Printf.sprintf "|%sJ|" (number_to_suit card_number)
   else if number_to_card card_number = 12 then
@@ -46,7 +48,7 @@ let bottom_board =
 
 (** Indices Indicator*)
 let indices =
-  "| 0| | 1| | 2| | 3| | 4| | 5| | 6| | 7| | 8| | 9| |10| |11| |12| | 13| |14| \
+  "| 0| | 1| | 2| | 3| | 4| | 5| | 6| | 7| | 8| | 9| |10| |11| |12| |13| |14| \
    |15| |16| |17| |18| |19|"
 
 (** [print_board ] takes current cards state and print the board when it's
