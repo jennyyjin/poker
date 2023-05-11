@@ -77,14 +77,23 @@ let int_list_to_string (lst : int list) : string =
 (** [char_to_int c] converts a char to an int *)
 let char_to_int (c : char) : int = int_of_char c - int_of_char '0'
 
+(** [remove_joker_two lst] returns a list of cards with jokers and 2 removed *)
+let rec remove_joker_two (lst : int list) =
+  let remove_joker_lst = remove_joker lst in
+  match remove_joker_lst with
+  | [] -> []
+  | h :: t ->
+      if h = 12 || h = 25 || h = 38 || h = 51 then remove_joker_two t
+      else h :: remove_joker_two t
+
 (** [straight this other] returns a straight to put down in response to the
     straight the other player just put down. Returns [Continue card] where card
     is the list of cards to put down if there is a straight in [this] with
     greater ranks than [other] and [Other] if there are no cards greater.
     Requires: [this] is not empty, and [other] is a list of five consecutive
     numbers with no duplicates *)
-let rec straight (this : int list) (other : int list) : choice =
-  match sorted_uniq (remove_joker this) with
+let rec straight_helper (this : int list) (other : int list) : choice =
+  match sorted_uniq (remove_joker_two this) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Other
   | c1 :: c2 :: c3 :: c4 :: c5 :: t ->
       if
@@ -97,7 +106,7 @@ let rec straight (this : int list) (other : int list) : choice =
         && (c4 mod 13) - (char_to_int (int_list_to_string other).[3] mod 13)
            = (c5 mod 13) - (char_to_int (int_list_to_string other).[4] mod 13)
       then Continue [ c1; c2; c3; c4; c5 ]
-      else straight (c2 :: c3 :: c4 :: c5 :: t) other
+      else straight_helper (c2 :: c3 :: c4 :: c5 :: t) other
 
 (** [double_helper lst] only contains duplicates *)
 let rec double_helper (lst : int list) : int list =
@@ -240,22 +249,6 @@ let getcardtype (this : int list) : cardstype =
         else Invalid
       else Invalid
   | _ -> Invalid
-
-(**[play this other] returns AI's decision based on its current cards and the
-   previous card *)
-let play (this : int list) (other : int list) : choice =
-  let size = List.length other in
-  match size with
-  | 0 -> Continue [ List.hd this ]
-  | 1 -> single this other
-  | 2 -> double this other
-  | 3 -> triple this other
-  | 4 -> quad other
-  | 5 ->
-      let cardtype = getcardtype other in
-      if cardtype = Fullhouse then triple_p_double this other
-      else straight this other
-  | _ -> Other
 
 (**[check_same_type this that] returns true if this and that have the same card
    type *)

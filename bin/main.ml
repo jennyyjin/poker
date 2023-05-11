@@ -3,6 +3,7 @@ open Draw
 open Comparison
 open Assign
 open Play
+open Ai
 
 exception Format
 
@@ -60,7 +61,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
     else if turn = 1 then
       let input =
-        match Comparison.play fst_ai_cards prev_cards with
+        match Ai.play fst_ai_cards prev_cards with
         | Skip | Other -> []
         | Continue cards -> cards
       in
@@ -72,7 +73,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2
     else
       let input =
-        match Comparison.play snd_ai_cards prev_cards with
+        match Ai.play snd_ai_cards prev_cards with
         | Skip | Other -> []
         | Continue cards -> cards
       in

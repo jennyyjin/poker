@@ -4,6 +4,7 @@ open Draw
 open Comparison
 open Assign
 open Play
+open Ai
 
 (**[string_of_int_pair lst1 lst2] is the printer functions that print out the
    result of the split_in_half function that helps with debugging *)
@@ -358,9 +359,118 @@ let play_tests =
            [ update_ai_card_tests; update_card_tests; index_to_num_tests ];
   ]
 
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let straight_test (name : string) (card : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (find_straight_list card) expected_output
+
+let straight_tests =
+  [
+    straight_test "hi"
+      [ 0; 1; 2; 3; 4; 5 + 13 ]
+      [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ] ];
+  ]
+
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let two_test (name : string) (card : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (find_two_list card) expected_output
+
+let two_tests =
+  [
+    two_test "hi1"
+      [ 0; 1; 2; 3; 4; 5 + 13; 5 + 26; 4 + 13 ]
+      [ [ 4; 4 + 13 ]; [ 5 + 13; 5 + 26 ] ];
+    two_test "hi2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+  ]
+
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let three_test (name : string) (card : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (find_three_list card) expected_output
+
+let three_tests =
+  [
+    three_test "hi3"
+      [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ]
+      [ [ 0; 13; 26 ]; [ 1; 14; 27 ] ];
+    three_test "hi4" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+  ]
+
+let four_test (name : string) (card : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (find_four_list card) expected_output
+
+let four_tests =
+  [
+    four_test "hi3"
+      [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ]
+      [ [ 0; 13; 26; 39 ]; [ 1; 14; 27; 40 ] ];
+    four_test "hi4" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+  ]
+
+let string_of_int_list_list_list lst =
+  lst
+  |> List.map (fun ll ->
+         ll
+         |> List.map (fun l ->
+                l |> List.map string_of_int |> String.concat "; ")
+         |> String.concat " | ")
+  |> String.concat " || "
+  |> Printf.sprintf "[[ [%s] ]]"
+
+let split_test (name : string) (card : int list) expected_output : test =
+  name >:: fun _ ->
+  assert_equal (split_cards card) expected_output
+    ~printer:string_of_int_list_list_list
+
+let split_tests =
+  [
+    split_test "his"
+      [
+        2;
+        2 + 13;
+        4;
+        4 + 13;
+        5;
+        6;
+        6 + 13;
+        6 + 26;
+        7;
+        8;
+        8 + 13;
+        9;
+        10;
+        10 + 13;
+        11;
+        12;
+        12 + 13;
+        12 + 26;
+        52;
+        53;
+      ]
+      [
+        [];
+        [ [ 5; 19; 7; 8; 9 ] ];
+        [ [ 12; 12 + 13; 12 + 26 ] ];
+        [ [ 2; 2 + 13 ]; [ 4; 4 + 13 ]; [ 6; 6 + 26 ]; [ 10; 10 + 13 ] ];
+        [ [ 8 + 13 ]; [ 11 ]; [ 52 ]; [ 53 ] ];
+      ];
+    split_test "hiss" [ 0; 13; 53 ] [ []; []; []; [ [ 0; 13 ] ]; [ [ 53 ] ] ];
+  ]
+
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
-  >::: List.flatten [ assign_card_tests; comparison_tests; play_tests ]
+  >::: List.flatten
+         [
+           assign_card_tests;
+           comparison_tests;
+           play_tests;
+           straight_tests;
+           two_tests;
+           three_tests;
+           four_tests;
+           split_tests;
+         ]
 
 let _ = run_test_tt_main suite
