@@ -30,23 +30,11 @@ let print_cards (cards : int list) =
 (** Guide on top of the board for player's turn*)
 let guide_player = "\n\nIt's your turn!\n"
 
-(** Guide on top of the board for AIs's turn*)
-let guide_ai1 = "\n\nIt's Player 1 turn!\n"
+(** Guide on top of the board for player's first turn*)
+let guide_fst_player = "\n\nYou start the game!\n"
 
-let guide_ai2 = "\n\nIt's Player 2 turn!\n"
-
-(** Board Top*)
-let top_ai = "--------------------------------------------------------------"
-
-(** Board Bottom*)
-let bottom_ai = "--------------------------------------------------------------"
-
-(** Board Top*)
-let top_board = "=============================================================="
-
-(** Board Bottom*)
-let bottom_board =
-  "=============================================================="
+(** Guide on top of the board for player's invalid turn*)
+let guide_invalid_player = "\n\nBe careful with input rule!\n"
 
 (** [indices_helper i ] convert i to string '| i|' or '|i|'*)
 let indices_helper i =
@@ -62,11 +50,23 @@ let indices (player_cards : int list) =
   let indices_l = indices_list cards_size in
   List.fold_left (fun acc x -> acc ^ x) "" indices_l
 
+(** Board Top*)
+let top_board (player_cards : int list) =
+  let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
+  let board_lst = List.map (fun x -> "=====") new_player_cards in
+  List.fold_left (fun acc x -> acc ^ x) "" board_lst
+
+(** Board Bottom*)
+let bottom_board (player_cards : int list) =
+  let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
+  let board_lst = List.map (fun x -> "=====") new_player_cards in
+  List.fold_left (fun acc x -> acc ^ x) "" board_lst
+
 (** [print_board ] takes current cards state and print the board when it's
     player's turn*)
 let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     (player_cards : int list) (prev_cards : int list) =
-  guide_player ^ top_board ^ "\n"
+  guide_player ^ top_board player_cards ^ "\n"
   ^ Printf.sprintf "Player1's number of cards left: %i"
       (List.length fst_ai_cards)
   ^ "\n"
@@ -74,33 +74,34 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
       (List.length snd_ai_cards)
   ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
   ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
-  ^ indices player_cards ^ "\n" ^ bottom_board ^ "\n" ^ print_cards fst_ai_cards
-  ^ "\n" ^ print_cards snd_ai_cards
-
-(** [print_ai_board ] takes current cards state and print the board when it's
-    first AI's turn*)
-let print_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
-    (player_cards : int list) (prev_cards : int list) =
-  guide_ai1 ^ top_ai ^ "\n"
-  ^ Printf.sprintf "Player1's number of cards left: %i"
-      (List.length fst_ai_cards)
-  ^ "\n"
-  ^ Printf.sprintf "Player2's number of cards left: %i"
-      (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
+  ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
   ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
 
-(** [print_snd_ai_board ] takes current cards state and print the board when
-    it's second AI's turn*)
-let print_snd_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
+(** [print_fst_board ] takes the beginning cards state and print the board*)
+let print_fst_board (fst_ai_cards : int list) (snd_ai_cards : int list)
+    (player_cards : int list) =
+  guide_fst_player ^ top_board player_cards ^ "\n"
+  ^ Printf.sprintf "Player1's number of cards left: %i"
+      (List.length fst_ai_cards)
+  ^ "\n"
+  ^ Printf.sprintf "Player2's number of cards left: %i"
+      (List.length snd_ai_cards)
+  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
+  ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
+  ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
+
+(** [print_fst_board ] print the board when the user has invalid input*)
+let print_invalid_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     (player_cards : int list) (prev_cards : int list) =
-  guide_ai2 ^ top_ai ^ "\n"
+  top_board player_cards ^ "\n"
   ^ Printf.sprintf "Player1's number of cards left: %i"
       (List.length fst_ai_cards)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
   ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
+  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
+  ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
   ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
 
 let print_player_choice (player_choice : int list) =
