@@ -21,6 +21,7 @@ type cardstype =
   | Double
   | Triple
   | Fullhouse
+  | TripleOne
   | Straight
   | Bomb
   | Joker
@@ -206,6 +207,18 @@ let rec joker_pair (lst : int list) : choice =
   | _ :: [ 52; 53 ] -> Continue [ 52; 53 ]
   | _ -> Skip
 
+(** [triple_p_one this other] returns [Continue card] where card is a list of
+    four cards of the same rank if there is a one-of-a-kind in [lst] and [Other]
+    otherwise *)
+let rec triple_p_one (this : int list) (other : int list) : choice =
+  let t_cards = [ List.nth other 0; List.nth other 1; List.nth other 2 ] in
+  match triple this t_cards with
+  | Skip -> Other
+  | Other -> Other
+  | Continue cards ->
+      let rest_cards = update_ai_cards this cards in
+      Continue (cards @ [ List.hd rest_cards ])
+
 (** [triple_p_double this other] returns [Continue card] where card is a list of
     four cards of the same rank if there is a two-of-a-kind in [lst] and [Other]
     otherwise *)
@@ -243,7 +256,9 @@ let getcardtype (this : int list) : cardstype =
       let card2 = Helper.number_to_card (List.nth sort_this 1) in
       let card3 = Helper.number_to_card (List.nth sort_this 2) in
       let card4 = Helper.number_to_card (List.nth sort_this 3) in
-      if card1 = card2 && card2 = card3 && card3 = card4 then Bomb else Invalid
+      if card1 = card2 && card2 = card3 && card3 = card4 then Bomb
+      else if card1 = card2 && card2 = card3 then TripleOne
+      else Invalid
   | 5 ->
       let card1 = Helper.number_to_card (List.nth sort_this 0) in
       let card2 = Helper.number_to_card (List.nth sort_this 1) in
@@ -285,9 +300,9 @@ let compare_same_type (this : int list) (other : int list) =
   | Single | Double | Triple | Straight | Bomb ->
       let diff = compare_card (List.hd this) (List.hd other) in
       if diff = -1 then LT else if diff = 1 then GT else EQ
-  | Fullhouse ->
+  | Fullhouse | TripleOne ->
       let diff3 = compare_card (List.hd this) (List.hd other) in
-      let diff2 = compare_card (List.nth this 4) (List.nth other 4) in
+      let diff2 = compare_card (List.nth this 3) (List.nth other 3) in
       if diff3 = -1 then LT
       else if diff3 = 1 then GT
       else if diff2 = -1 then LT
@@ -304,7 +319,7 @@ let compare_diff_type (this : int list) (other : int list) =
   if cardstypeother = Empty && cardstype != Invalid then GT
   else
     match cardstype with
-    | Single | Double | Triple | Straight | Fullhouse -> IV
+    | Single | Double | Triple | Straight | Fullhouse | TripleOne -> IV
     | Bomb -> if getcardtype other = Joker then LT else GT
     | Joker -> GT
     | Empty -> GT

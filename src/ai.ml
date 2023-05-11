@@ -184,7 +184,14 @@ let play (this : int list) (other : int list) : choice =
         | _ -> double (List.flatten (List.nth splitted_cards 2)) other
       else Other
   | 3 -> triple (List.flatten (List.nth splitted_cards 2)) other
-  | 4 -> quad other
+  | 4 ->
+      let cardtype = getcardtype other in
+      if cardtype = TripleOne then
+        triple_p_one
+          (List.flatten (List.nth splitted_cards 2)
+          @ List.flatten (List.nth splitted_cards 4))
+          other
+      else quad other
   | 5 ->
       let cardtype = getcardtype other in
       if cardtype = Fullhouse then
