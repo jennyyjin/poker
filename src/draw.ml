@@ -48,12 +48,15 @@ let top_board = "=============================================================="
 let bottom_board =
   "=============================================================="
 
+(** [indices_helper i ] convert i to string '| i|' or '|i|'*)
 let indices_helper i =
   if i < 10 then "| " ^ string_of_int i ^ "| " else "|" ^ string_of_int i ^ "| "
 
+(** [indices_lst i ] returns lst ['|0|', '|1|', ..., '|i|']*)
 let rec indices_list i =
   if i < 0 then [] else indices_list (i - 1) @ [ indices_helper i ]
 
+(** [indices] returns the indice bar used for the game*)
 let indices (player_cards : int list) =
   let cards_size = List.length player_cards - 1 in
   let indices_l = indices_list cards_size in
