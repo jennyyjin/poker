@@ -6,7 +6,7 @@ type card =
   | Diamond of int
   | Club of int
 
-(** [card_list] is a funciton that produce a list of integer from 1 to 54
+(** [card_list] is a funciton that produce a list of integer from 0 to 53
     inclusive*)
 let card_list = List.init 54 (fun i -> i)
 
@@ -24,11 +24,12 @@ let rec shuffling rest_cards current_deck =
       let rest_cards = update_ai_cards rest_cards [ chosen_card ] in
       shuffling rest_cards current_deck @ [ chosen_card ]
 
-(** [scrambled_list] is the 54 cards in a poker deck and we name them from 1 to
-    54 and scramble them up*)
+(** [scrambled_list] is the 54 cards in a poker deck and we name them from 0 to
+    53 and scramble them up*)
 let scrambled_list = List.sort (fun _ _ -> random 3 - 1) card_list
 
-(** [split_in_half lst] splits up the cards into two decks.*)
+(** [split_in_half lst] splits up the cards into two decks in which the fst gets
+    the first card.*)
 let rec split_in_half lst =
   match lst with
   | [] -> ([], [])

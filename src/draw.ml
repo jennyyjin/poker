@@ -9,6 +9,8 @@ let print_card (card_number : int) =
     Printf.sprintf "|%s|" (number_to_suit card_number)
   else if number_to_card card_number = 10 then
     Printf.sprintf "|%sX|" (number_to_suit card_number)
+  else if number_to_card card_number = 10 then
+    Printf.sprintf "|%sX|" (number_to_suit card_number)
   else if number_to_card card_number = 11 then
     Printf.sprintf "|%sJ|" (number_to_suit card_number)
   else if number_to_card card_number = 12 then

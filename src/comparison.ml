@@ -95,6 +95,10 @@ let rec double_lst (this : int list) (other : int list) : int list =
       else double_lst t other
 
 let double (this : int list) (other : int list) : choice =
+  assert (
+    match other with
+    | [ x; y ] -> compare_card x y = 0
+    | _ -> false);
   match double_lst this other with
   | [] -> Other
   | [ c1; c2 ] -> Continue [ c1; c2 ]
@@ -116,6 +120,10 @@ let rec triple_lst (this : int list) (other : int list) : int list =
       else triple_lst t other
 
 let triple (this : int list) (other : int list) : choice =
+  assert (
+    match other with
+    | [ x; y; z ] -> compare_card x y = 0 && compare_card y z = 0
+    | _ -> false);
   match triple_lst this other with
   | [] -> Other
   | [ c1; c2; c3 ] -> Continue [ c1; c2; c3 ]
