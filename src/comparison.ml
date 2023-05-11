@@ -315,10 +315,8 @@ let check_valid (cards1 : int list) (cards2 : int list) =
   let samecard = check_same_type cards1 cards2 in
   match samecard with
   | true ->
-      let x = print_endline "true" in
       let diff = compare_same_type cards1 cards2 in
       if diff = GT then true else false
   | false ->
-      let y = print_endline "false" in
       let diff = compare_diff_type cards1 cards2 in
       if diff = GT then true else false
