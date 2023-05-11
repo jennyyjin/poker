@@ -367,8 +367,8 @@ let straight_test (name : string) (card : int list) expected_output : test =
 let straight_tests =
   [
     straight_test "hi"
-      [ 0; 1; 2; 3; 4; 5 + 13 ]
-      [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ] ];
+      [ 0; 1; 2; 3; 4; 5 + 13; 6 ]
+      [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ]; [ 2; 3; 4; 5 + 13; 6 ] ];
   ]
 
 (**[single_test name card1 card2 expected_outputs] ensures the correctness of
@@ -458,6 +458,21 @@ let split_tests =
     split_test "hiss" [ 0; 13; 53 ] [ []; []; []; [ [ 0; 13 ] ]; [ [ 53 ] ] ];
   ]
 
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let s_test (name : string) (card : int list) (other : int list) expected_output
+    : test =
+  name >:: fun _ -> assert_equal (straight card other) expected_output
+
+let s_tests =
+  [
+    s_test "hi3" [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ] [ 0; 1; 2; 3; 4 ] Other;
+    s_test "hi3"
+      [ 1; 2; 3; 4; 5; 7; 8; 9; 10 ]
+      [ 0; 1; 2; 3; 4 ]
+      (Continue [ 1; 2; 3; 4; 5 ]);
+  ]
+
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
@@ -471,6 +486,7 @@ let suite =
            three_tests;
            four_tests;
            split_tests;
+           s_tests;
          ]
 
 let _ = run_test_tt_main suite

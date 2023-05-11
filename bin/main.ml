@@ -15,7 +15,8 @@ let check_empty (str : string) = String.length str <> 0
 
 (** [play_game ai_cards player_cards prev_cards turn] runs the poker game,
     allowing player to put down cards *)
-let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
+let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
+    same_cards_count choice =
   try
     if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then
       ANSITerminal.print_string [ ANSITerminal.green ]
@@ -30,14 +31,15 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
     then exit 0;
     if turn = 0 then
       print_string
-        (Draw.print_board fst_ai_cards snd_ai_cards player_cards prev_cards)
-    else if turn = 1 then
-      print_string
-        (Draw.print_ai_board fst_ai_cards snd_ai_cards player_cards prev_cards)
-    else
-      print_string
-        (Draw.print_snd_ai_board fst_ai_cards snd_ai_cards player_cards
-           prev_cards);
+        (Draw.print_ai2_choice choice
+        ^ "\n"
+        ^ Draw.print_board fst_ai_cards snd_ai_cards player_cards prev_cards)
+    else if turn = 1 then print_string (Draw.print_player_choice choice)
+      (* print_string (Draw.print_ai_board fst_ai_cards snd_ai_cards
+         player_cards prev_cards) *)
+    else print_string (Draw.print_ai_choice choice);
+    (* print_string (Draw.print_snd_ai_board fst_ai_cards snd_ai_cards
+       player_cards prev_cards); *)
     if turn = 0 then
       print_string
         "\nPlease input the indices of the cards you want to put down: \n";
@@ -51,39 +53,58 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn =
             (List.filter check_empty (String.split_on_char ' ' user_input))
         in
         let player_placed_cards = index_to_num player_cards input in
+        let prev_cards =
+          if same_cards_count mod 3 = 2 then [] else prev_cards
+        in
         let checkvalid =
           Comparison.check_valid player_placed_cards prev_cards
         in
         if checkvalid = false then raise Format
         else
-          let prev_cards = index_to_num player_cards input in
-          let player_cards = update_cards player_cards input in
-          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
+          match player_placed_cards with
+          | [] ->
+              play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
+                (same_cards_count + 1) player_placed_cards
+          | _ ->
+              let prev_cards = index_to_num player_cards input in
+              let player_cards = update_cards player_cards input in
+              play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1 0
+                player_placed_cards
     else if turn = 1 then
+      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let input =
         match Ai.play fst_ai_cards prev_cards with
         | Skip | Other -> []
         | Continue cards -> cards
       in
       match input with
-      | [] -> play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2
+      | [] ->
+          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2
+            (same_cards_count + 1) input
       | _ ->
           let prev_cards = input in
           let fst_ai_cards = update_ai_cards fst_ai_cards input in
-          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2
+          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2 0 input
     else
+      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let input =
         match Ai.play snd_ai_cards prev_cards with
         | Skip | Other -> []
         | Continue cards -> cards
       in
-      let prev_cards = input in
-      let snd_ai_cards = update_ai_cards snd_ai_cards input in
-      play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
+      match input with
+      | [] ->
+          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
+            (same_cards_count + 1) input
+      | _ ->
+          let prev_cards = input in
+          let snd_ai_cards = update_ai_cards snd_ai_cards input in
+          play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0 0 input
   with _ ->
     ANSITerminal.print_string [ ANSITerminal.red ]
       "\nYour input is invalid. Please try again.";
     play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
+      same_cards_count choice
 
 let main () =
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWelcome to Poker.\n\n";
@@ -111,6 +132,6 @@ let main () =
   let player_cards = sorted c in
   let prev_cards = [] in
   let turn = 0 in
-  play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
+  play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn 0 []
 
 let () = main ()

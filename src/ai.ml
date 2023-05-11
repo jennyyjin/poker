@@ -165,18 +165,25 @@ let split_cards cards =
   let single = find_single_list cards4 in
   result4 @ [ single ]
 
+let make_fst_choice (cards : int list) : choice = Continue [ List.hd cards ]
+
 (**[play this other] returns AI's decision based on its current cards and the
    previous card *)
 let play (this : int list) (other : int list) : choice =
+  let splitted_cards = split_cards this in
   let size = List.length other in
   match size with
-  | 0 -> Continue [ List.hd this ]
-  | 1 -> single this other
-  | 2 -> double this other
-  | 3 -> triple this other
+  | 0 -> make_fst_choice this
+  | 1 -> single (List.flatten (List.nth splitted_cards 4)) other
+  | 2 -> double (List.flatten (List.nth splitted_cards 3)) other
+  | 3 -> triple (List.flatten (List.nth splitted_cards 2)) other
   | 4 -> quad other
   | 5 ->
       let cardtype = getcardtype other in
-      if cardtype = Fullhouse then triple_p_double this other
-      else straight_helper this other
+      if cardtype = Fullhouse then
+        triple_p_double
+          (List.flatten (List.nth splitted_cards 2)
+          @ List.flatten (List.nth splitted_cards 3))
+          other
+      else straight (List.flatten (List.nth splitted_cards 1)) other
   | _ -> Other

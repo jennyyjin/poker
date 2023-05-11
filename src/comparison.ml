@@ -86,12 +86,7 @@ let rec remove_joker_two (lst : int list) =
       if h = 12 || h = 25 || h = 38 || h = 51 then remove_joker_two t
       else h :: remove_joker_two t
 
-(** [straight this other] returns a straight to put down in response to the
-    straight the other player just put down. Returns [Continue card] where card
-    is the list of cards to put down if there is a straight in [this] with
-    greater ranks than [other] and [Other] if there are no cards greater.
-    Requires: [this] is not empty, and [other] is a list of five consecutive
-    numbers with no duplicates *)
+(** [straight this other] returns the first straight found on card list this *)
 let rec straight_helper (this : int list) (other : int list) : choice =
   match sorted_uniq (remove_joker_two this) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Other
@@ -107,6 +102,30 @@ let rec straight_helper (this : int list) (other : int list) : choice =
            = (c5 mod 13) - (char_to_int (int_list_to_string other).[4] mod 13)
       then Continue [ c1; c2; c3; c4; c5 ]
       else straight_helper (c2 :: c3 :: c4 :: c5 :: t) other
+
+(** [straight this other] returns a straight to put down in response to the
+    straight the other player just put down. Returns [Continue card] where card
+    is the list of cards to put down if there is a straight in [this] with
+    greater ranks than [other] and [Other] if there are no cards greater.
+    Requires: [this] is not empty, and [other] is a list of five consecutive
+    numbers with no duplicates *)
+let rec straight (this : int list) (other : int list) : choice =
+  let smallest = [ 0; 1; 2; 3; 4 ] in
+  let fst = straight_helper this smallest in
+  match fst with
+  | Other -> Other
+  | Continue [ c1; c2; c3; c4; c5 ] -> (
+      let diff =
+        compare_card
+          (List.hd (sorted [ c1; c2; c3; c4; c5 ]))
+          (List.hd (sorted other))
+      in
+      if diff = 1 then Continue [ c1; c2; c3; c4; c5 ]
+      else
+        match this with
+        | h :: t -> straight t other
+        | [] -> Other)
+  | _ -> Other
 
 (** [double_helper lst] only contains duplicates *)
 let rec double_helper (lst : int list) : int list =

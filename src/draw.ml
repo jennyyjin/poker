@@ -72,9 +72,10 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards on Board: " ^ print_cards prev_cards ^ "\n"
+  ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
   ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
-  ^ indices player_cards ^ "\n" ^ bottom_board
+  ^ indices player_cards ^ "\n" ^ bottom_board ^ "\n" ^ print_cards fst_ai_cards
+  ^ "\n" ^ print_cards snd_ai_cards
 
 (** [print_ai_board ] takes current cards state and print the board when it's
     first AI's turn*)
@@ -86,7 +87,8 @@ let print_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards put down by you: " ^ print_cards prev_cards ^ "\n"
+  ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
+  ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
 
 (** [print_snd_ai_board ] takes current cards state and print the board when
     it's second AI's turn*)
@@ -98,4 +100,20 @@ let print_snd_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards on Board: " ^ print_cards prev_cards ^ "\n"
+  ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
+  ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
+
+let print_player_choice (player_choice : int list) =
+  match player_choice with
+  | [] -> "Player: Skip" ^ "\n"
+  | _ -> "\n" ^ "Player:" ^ print_cards player_choice ^ "\n"
+
+let print_ai_choice (ai_choice : int list) =
+  match ai_choice with
+  | [] -> "AI Apple: Skip" ^ "\n"
+  | _ -> "\n" ^ "AI Apple:" ^ print_cards ai_choice ^ "\n"
+
+let print_ai2_choice (ai2_choice : int list) =
+  match ai2_choice with
+  | [] -> "AI Banana: Skip" ^ "\n"
+  | _ -> "\n" ^ "AI Banana:" ^ print_cards ai2_choice ^ "\n"
