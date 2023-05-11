@@ -18,6 +18,7 @@ let check_empty (str : string) = String.length str <> 0
 let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
     same_cards_count choice =
   try
+    let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
     if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then
       ANSITerminal.print_string [ ANSITerminal.green ]
         "\n\n Sorry, you lost! \n"
@@ -44,7 +45,6 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
       print_string
         "\nPlease input the indices of the cards you want to put down: \n";
     if turn = 0 then
-      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let user_input = read_line () in
       if user_input = "quit" then exit 0
       else
@@ -69,7 +69,6 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
               play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1 0
                 player_placed_cards
     else if turn = 1 then
-      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let input =
         match Ai.play fst_ai_cards prev_cards with
         | Skip | Other -> []
@@ -84,7 +83,6 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
           let fst_ai_cards = update_ai_cards fst_ai_cards input in
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2 0 input
     else
-      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let input =
         match Ai.play snd_ai_cards prev_cards with
         | Skip | Other -> []
