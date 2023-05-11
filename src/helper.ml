@@ -9,5 +9,5 @@ let number_to_suit (card_number : int) =
   else if card_number >= 13 && card_number < 26 then "♣"
   else if card_number >= 26 && card_number < 39 then "♡"
   else if card_number >= 39 && card_number < 52 then "♠"
-  else if card_number = 52 then "🃟"
+  else if card_number = 52 then "🃟 "
   else "🃏"

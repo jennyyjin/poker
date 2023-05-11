@@ -7,6 +7,8 @@ let number_to_suit (card_number : int) = Helper.number_to_suit card_number
 let print_card (card_number : int) =
   if number_to_card card_number = 0 then
     Printf.sprintf "|%s|" (number_to_suit card_number)
+  else if number_to_card card_number = 10 then
+    Printf.sprintf "|%sX|" (number_to_suit card_number)
   else if number_to_card card_number = 11 then
     Printf.sprintf "|%sJ|" (number_to_suit card_number)
   else if number_to_card card_number = 12 then
@@ -44,10 +46,16 @@ let top_board = "=============================================================="
 let bottom_board =
   "=============================================================="
 
-(** Indices Indicator*)
-let indices =
-  "| 0| | 1| | 2| | 3| | 4| | 5| | 6| | 7| | 8| | 9| |10| |11| |12| | 13| |14| \
-   |15| |16| |17| |18| |19|"
+let indices_helper i =
+  if i < 10 then "| " ^ string_of_int i ^ "| " else "|" ^ string_of_int i ^ "| "
+
+let rec indices_list i =
+  if i < 0 then [] else indices_list (i - 1) @ [ indices_helper i ]
+
+let indices (player_cards : int list) =
+  let cards_size = List.length player_cards - 1 in
+  let indices_l = indices_list cards_size in
+  List.fold_left (fun acc x -> acc ^ x) "" indices_l
 
 (** [print_board ] takes current cards state and print the board when it's
     player's turn*)
@@ -59,9 +67,9 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards put down by AI: " ^ print_cards prev_cards ^ "\n"
-  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n" ^ indices ^ "\n"
-  ^ bottom_board
+  ^ "\n" ^ "Cards on Board: " ^ print_cards prev_cards ^ "\n"
+  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
+  ^ indices player_cards ^ "\n" ^ bottom_board
 
 (** [print_ai_board ] takes current cards state and print the board when it's
     first AI's turn*)
@@ -74,8 +82,6 @@ let print_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
   ^ "\n" ^ "Cards put down by you: " ^ print_cards prev_cards ^ "\n"
-  ^ "Your cards in hand:\n " ^ print_cards player_cards ^ "\n" ^ indices ^ "\n"
-  ^ bottom_ai
 
 (** [print_snd_ai_board ] takes current cards state and print the board when
     it's second AI's turn*)
@@ -87,6 +93,4 @@ let print_snd_ai_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Card on Board: " ^ print_cards prev_cards ^ "\n"
-  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n" ^ indices ^ "\n"
-  ^ bottom_ai
+  ^ "\n" ^ "Cards on Board: " ^ print_cards prev_cards ^ "\n"
