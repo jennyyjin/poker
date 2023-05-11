@@ -175,7 +175,14 @@ let play (this : int list) (other : int list) : choice =
   match size with
   | 0 -> make_fst_choice this
   | 1 -> single (List.flatten (List.nth splitted_cards 4)) other
-  | 2 -> double (List.flatten (List.nth splitted_cards 3)) other
+  | 2 ->
+      let joker = List.hd other <> 52 && List.hd other <> 53 in
+      if joker then
+        let result = double (List.flatten (List.nth splitted_cards 3)) other in
+        match result with
+        | Continue [ c1; c2 ] -> Continue [ c1; c2 ]
+        | _ -> double (List.flatten (List.nth splitted_cards 2)) other
+      else Other
   | 3 -> triple (List.flatten (List.nth splitted_cards 2)) other
   | 4 -> quad other
   | 5 ->

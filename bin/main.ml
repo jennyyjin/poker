@@ -44,6 +44,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
       print_string
         "\nPlease input the indices of the cards you want to put down: \n";
     if turn = 0 then
+      let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
       let user_input = read_line () in
       if user_input = "quit" then exit 0
       else
@@ -53,9 +54,6 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
             (List.filter check_empty (String.split_on_char ' ' user_input))
         in
         let player_placed_cards = index_to_num player_cards input in
-        let prev_cards =
-          if same_cards_count mod 3 = 2 then [] else prev_cards
-        in
         let checkvalid =
           Comparison.check_valid player_placed_cards prev_cards
         in
@@ -103,7 +101,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
   with _ ->
     ANSITerminal.print_string [ ANSITerminal.red ]
       "\nYour input is invalid. Please try again.";
-    play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
+    play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
       same_cards_count choice
 
 let main () =
@@ -132,6 +130,9 @@ let main () =
   let player_cards = sorted c in
   let prev_cards = [] in
   let turn = 0 in
-  play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn 0 []
+  let same_cards_count = 0 in
+  let choice = [] in
+  play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
+    same_cards_count choice
 
 let () = main ()

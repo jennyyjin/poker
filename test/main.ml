@@ -473,6 +473,23 @@ let s_tests =
       (Continue [ 1; 2; 3; 4; 5 ]);
   ]
 
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let type_test (name : string) (cards : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (getcardtype cards) expected_output
+
+let type_tests =
+  [ type_test "hi3" [ 52 ] Single; type_test "hi3" [ 52; 53 ] Joker ]
+
+(**[single_test name card1 card2 expected_outputs] ensures the correctness of
+   the single card that can be put down by the player *)
+let valid_test (name : string) (cards : int list) (other : int list)
+    expected_output : test =
+  name >:: fun _ -> assert_equal (check_valid cards other) expected_output
+
+let valid_tests =
+  [ valid_test "hi3" [ 53; 52 ] [] true; valid_test "hi3" [ 52; 53 ] [] true ]
+
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
@@ -487,6 +504,8 @@ let suite =
            four_tests;
            split_tests;
            s_tests;
+           type_tests;
+           valid_tests;
          ]
 
 let _ = run_test_tt_main suite
