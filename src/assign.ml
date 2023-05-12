@@ -1,11 +1,5 @@
 open Play
 
-type card =
-  | Spade of int
-  | Heart of int
-  | Diamond of int
-  | Club of int
-
 (** [card_list] is a funciton that produce a list of integer from 0 to 53
     inclusive*)
 let card_list = List.init 54 (fun i -> i)
