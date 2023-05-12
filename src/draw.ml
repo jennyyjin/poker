@@ -72,7 +72,7 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Player2's number of cards left: %i"
       (List.length snd_ai_cards)
-  ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
+  ^ "\n" ^ "Card(s) to beat: " ^ print_cards prev_cards ^ "\n"
   ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
   ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
   ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards
