@@ -50,6 +50,64 @@ let sorted (cards : int list) : int list = List.sort compare_card cards
 let sorted_uniq (cards : int list) : int list =
   List.sort_uniq compare_card cards
 
+(** [remove_joker lst] returns a list of cards with jokers removed *)
+let rec remove_joker (lst : int list) =
+  match lst with
+  | [] -> []
+  | h :: t -> if h = 52 || h = 53 then remove_joker t else h :: remove_joker t
+
+(**[getcardtype this] returns this's card type *)
+let getcardtype (this : int list) : cardstype =
+  let sort_this = sorted this in
+  let size = List.length sort_this in
+  match size with
+  | 0 -> Empty
+  | 1 -> Single
+  | 2 ->
+      let card1 = Helper.number_to_card (List.nth sort_this 0) in
+      let card2 = Helper.number_to_card (List.nth sort_this 1) in
+      if card1 = 0 && card2 = 0 then Joker
+      else if card1 = card2 then Double
+      else Invalid
+  | 3 ->
+      let card1 = Helper.number_to_card (List.nth sort_this 0) in
+      let card2 = Helper.number_to_card (List.nth sort_this 1) in
+      let card3 = Helper.number_to_card (List.nth sort_this 2) in
+      if card1 = card2 && card2 = card3 then Triple else Invalid
+  | 4 ->
+      let card1 = Helper.number_to_card (List.nth sort_this 0) in
+      let card2 = Helper.number_to_card (List.nth sort_this 1) in
+      let card3 = Helper.number_to_card (List.nth sort_this 2) in
+      let card4 = Helper.number_to_card (List.nth sort_this 3) in
+      if card1 = card2 && card2 = card3 && card3 = card4 then Bomb
+      else if card1 = card2 && card2 = card3 then TripleOne
+      else if card2 = card3 && card3 = card4 then TripleOne
+      else Invalid
+  | 5 ->
+      let card1 = Helper.number_to_card (List.nth sort_this 0) in
+      let card2 = Helper.number_to_card (List.nth sort_this 1) in
+      let card3 = Helper.number_to_card (List.nth sort_this 2) in
+      let card4 = Helper.number_to_card (List.nth sort_this 3) in
+      let card5 = Helper.number_to_card (List.nth sort_this 4) in
+      if card1 = card2 && card2 = card3 && card4 = card5 then Fullhouse
+      else if card1 = card2 && card3 = card4 && card4 = card5 then Fullhouse
+      else if
+        card4 <> 0 && card5 <> 0 && card1 <> 1 && card1 <> 2 && card1 <> 11
+        && card1 <> 12 && card1 <> 13
+      then
+        if
+          card2 = card1 + 1
+          && card3 = card2 + 1
+          && card4 = card3 + 1
+          && card5 = card4 + 1
+        then Straight
+        else if
+          card1 = 10 && card2 = 11 && card3 = 12 && card4 = 13 && card5 = 1
+        then Straight
+        else Invalid
+      else Invalid
+  | _ -> Invalid
+
 (** [single this other] returns a single card to put down in response to the
     single card the other player just put down. Returns [Continue card] where
     card is the list of card to put down if there is a card in [this] with a
@@ -65,12 +123,6 @@ let rec single (this : int list) (other : int list) : choice =
       | _ ->
           if compare_card h (List.hd other) = 1 then Continue [ h ]
           else single t other)
-
-(** [remove_joker lst] returns a list of cards with jokers removed *)
-let rec remove_joker (lst : int list) =
-  match lst with
-  | [] -> []
-  | h :: t -> if h = 52 || h = 53 then remove_joker t else h :: remove_joker t
 
 (** [int_list_to_string lst] converts a list of integers to a string in
     ascending order without duplicates *)
@@ -192,15 +244,32 @@ let triple (this : int list) (other : int list) : choice =
   | [ c1; c2; c3 ] -> Continue [ c1; c2; c3 ]
   | _ -> raise Wrong
 
-(** [quad lst] returns [Continue card] where card is a list of four cards of the
-    same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
-let rec quad (lst : int list) : choice =
+(** [findquad lst] returns [Continue card] where card is a list of four cards of
+    the same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
+let rec find_quad (lst : int list) : choice =
   match sorted (remove_joker lst) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] -> Other
   | c1 :: c2 :: c3 :: c4 :: t ->
       if c1 mod 13 = c2 mod 13 && c2 mod 13 = c3 mod 13 && c3 mod 13 = c4 mod 13
       then Continue [ c1; c2; c3; c4 ]
-      else quad (c2 :: c3 :: c4 :: t)
+      else find_quad (c2 :: c3 :: c4 :: t)
+
+(** [quad lst] returns [Continue card] where card is a list of four cards of the
+    same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
+let rec quad (lst : int list) (other : int list) : choice =
+  let result = find_quad lst in
+  match result with
+  | Other -> Other
+  | Continue [ c1; c2; c3; c4 ] ->
+      if getcardtype other = Joker then Other
+      else if getcardtype other = Bomb then
+        let diff = compare_card c1 (List.hd other) in
+        if diff = 1 then result
+        else
+          let new_cards = update_ai_cards lst [ c1; c2; c3; c4 ] in
+          quad new_cards other
+      else result
+  | _ -> Other
 
 (** [joker_pair lst] returns [Continue card] where card is a list of two jokers
     if there are two jokers in [lst] and [Skip] otherwise *)
@@ -239,58 +308,6 @@ let rec triple_p_double (this : int list) (other : int list) : choice =
       match double_helper rest_cards with
       | [] | [ _ ] -> Other
       | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
-
-(**[getcardtype this] returns this's card type *)
-let getcardtype (this : int list) : cardstype =
-  let sort_this = sorted this in
-  let size = List.length sort_this in
-  match size with
-  | 0 -> Empty
-  | 1 -> Single
-  | 2 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      if card1 = 0 && card2 = 0 then Joker
-      else if card1 = card2 then Double
-      else Invalid
-  | 3 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
-      if card1 = card2 && card2 = card3 then Triple else Invalid
-  | 4 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
-      let card4 = Helper.number_to_card (List.nth sort_this 3) in
-      if card1 = card2 && card2 = card3 && card3 = card4 then Bomb
-      else if card1 = card2 && card2 = card3 then TripleOne
-      else if card2 = card3 && card3 = card4 then TripleOne
-      else Invalid
-  | 5 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
-      let card4 = Helper.number_to_card (List.nth sort_this 3) in
-      let card5 = Helper.number_to_card (List.nth sort_this 4) in
-      if card1 = card2 && card2 = card3 && card4 = card5 then Fullhouse
-      else if card1 = card2 && card3 = card4 && card4 = card5 then Fullhouse
-      else if
-        card4 <> 0 && card5 <> 0 && card1 <> 1 && card1 <> 2 && card1 <> 11
-        && card1 <> 12 && card1 <> 13
-      then
-        if
-          card2 = card1 + 1
-          && card3 = card2 + 1
-          && card4 = card3 + 1
-          && card5 = card4 + 1
-        then Straight
-        else if
-          card1 = 10 && card2 = 11 && card3 = 12 && card4 = 13 && card5 = 1
-        then Straight
-        else Invalid
-      else Invalid
-  | _ -> Invalid
 
 (**[check_same_type this that] returns true if this and that have the same card
    type *)
@@ -342,9 +359,4 @@ let check_valid (cards1 : int list) (cards2 : int list) =
       if diff = GT then true else false
   | false ->
       let diff = compare_diff_type cards1 cards2 in
-      if diff = GT then
-        let x = print_endline "true" in
-        true
-      else
-        let x = print_endline "false" in
-        false
+      if diff = GT then true else false

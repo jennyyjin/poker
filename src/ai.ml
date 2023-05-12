@@ -27,7 +27,7 @@ let rec find_three_list_aux (cards : int list) result =
 let find_three_list cards = find_three_list_aux cards []
 
 let find_four (cards : int list) =
-  let result = quad cards in
+  let result = find_quad cards in
   match result with
   | Other -> []
   | Continue [ c1; c2; c3; c4 ] -> [ c1; c2; c3; c4 ]
@@ -174,10 +174,14 @@ let play (this : int list) (other : int list) : choice =
   let size = List.length other in
   match size with
   | 0 -> make_fst_choice this
-  | 1 -> single (List.flatten (List.nth splitted_cards 4)) other
+  | 1 -> (
+      let result = single (List.flatten (List.nth splitted_cards 4)) other in
+      match result with
+      | Continue [ c1 ] -> Continue [ c1 ]
+      | _ -> single (List.flatten (List.nth splitted_cards 2)) other)
   | 2 ->
-      let joker = List.hd other <> 52 && List.hd other <> 53 in
-      if joker then
+      let not_joker = List.hd other <> 52 && List.hd other <> 53 in
+      if not_joker then
         let result = double (List.flatten (List.nth splitted_cards 3)) other in
         match result with
         | Continue [ c1; c2 ] -> Continue [ c1; c2 ]
@@ -191,7 +195,7 @@ let play (this : int list) (other : int list) : choice =
           (List.flatten (List.nth splitted_cards 2)
           @ List.flatten (List.nth splitted_cards 4))
           other
-      else quad other
+      else quad this other
   | 5 ->
       let cardtype = getcardtype other in
       if cardtype = Fullhouse then
