@@ -141,14 +141,27 @@ let find_best_straight cards straight_lists =
       | None -> straight_lists
       | Some i -> List.nth new_straight_lists i)
 
+let find_jokers cards =
+  let size = List.length cards in
+  let joker_cards =
+    match size with
+    | 0 | 1 -> []
+    | _ -> List.filter (fun x -> x = 52 || x = 53) cards
+  in
+  if List.length joker_cards = 2 then [ joker_cards ] else []
+
 (**[split_cards] cards split cards into 5 group:
    [\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note [quad] is a
    list of int list with all choices for quad*)
 let split_cards cards =
-  let quad = find_four_list cards in
-  let result1 = [] @ [ quad ] in
+  let jokers = find_jokers cards in
+  let result0 = [] @ [ jokers ] in
+  let jokers_cards = List.concat jokers in
+  let cards0 = update_ai_cards cards jokers_cards in
+  let quad = find_four_list cards0 in
+  let result1 = result0 @ [ quad ] in
   let quad_cards = List.concat quad in
-  let cards1 = update_ai_cards cards quad_cards in
+  let cards1 = update_ai_cards cards0 quad_cards in
   let straight_helper = find_straight_list cards1 in
   let straight = find_best_straight cards1 straight_helper in
   let result2 = result1 @ [ straight ] in
@@ -167,11 +180,11 @@ let split_cards cards =
 
 let make_fst_choice (cards : int list) : choice =
   let split = split_cards cards in
-  let quad = List.nth split 0 in
-  let straight = List.nth split 1 in
-  let triple = List.nth split 2 in
-  let double = List.nth split 3 in
-  let single = List.nth split 4 in
+  let quad = List.nth split 1 in
+  let straight = List.nth split 2 in
+  let triple = List.nth split 3 in
+  let double = List.nth split 4 in
+  let single = List.nth split 5 in
   if List.length straight <> 0 then Continue (List.hd straight)
   else if List.length triple <> 0 && List.length single <> 0 then
     Continue (List.hd triple @ List.hd single)
@@ -235,39 +248,55 @@ let collab (prev_cards : int list) : bool =
 
 (** [play this other] returns AI's decision based on its current cards and the
     previous card *)
-let play (this : int list) (other : int list) : choice =
+let play_helper (this : int list) (other : int list) : choice =
   let splitted_cards = split_cards this in
   let size = List.length other in
   match size with
   | 0 -> make_fst_choice this
   | 1 -> (
-      let result = single (List.flatten (List.nth splitted_cards 4)) other in
+      let result = single (List.flatten (List.nth splitted_cards 5)) other in
       match result with
       | Continue [ c1 ] -> Continue [ c1 ]
-      | _ -> single (List.flatten (List.nth splitted_cards 2)) other)
+      | _ -> single (List.flatten (List.nth splitted_cards 3)) other)
   | 2 ->
       let not_joker = List.hd other <> 52 && List.hd other <> 53 in
       if not_joker then
-        let result = double (List.flatten (List.nth splitted_cards 3)) other in
+        let result = double (List.flatten (List.nth splitted_cards 4)) other in
         match result with
         | Continue [ c1; c2 ] -> Continue [ c1; c2 ]
-        | _ -> double (List.flatten (List.nth splitted_cards 2)) other
+        | _ -> double (List.flatten (List.nth splitted_cards 3)) other
       else Other
-  | 3 -> triple (List.flatten (List.nth splitted_cards 2)) other
+  | 3 -> triple (List.flatten (List.nth splitted_cards 3)) other
   | 4 ->
       let cardtype = getcardtype other in
       if cardtype = TripleOne then
         triple_p_one
-          (List.flatten (List.nth splitted_cards 2)
-          @ List.flatten (List.nth splitted_cards 4))
+          (List.flatten (List.nth splitted_cards 3)
+          @ List.flatten (List.nth splitted_cards 5))
           other
       else quad this other
   | 5 ->
       let cardtype = getcardtype other in
       if cardtype = Fullhouse then
         triple_p_double
-          (List.flatten (List.nth splitted_cards 2)
-          @ List.flatten (List.nth splitted_cards 3))
+          (List.flatten (List.nth splitted_cards 3)
+          @ List.flatten (List.nth splitted_cards 4))
           other
-      else straight (List.flatten (List.nth splitted_cards 1)) other
+      else straight (List.flatten (List.nth splitted_cards 2)) other
   | _ -> Other
+
+let play (this : int list) (other : int list) (player_cards : int list) : choice
+    =
+  let result = play_helper this other in
+  match result with
+  | Continue [ _ ]
+  | Continue [ _; _ ]
+  | Continue [ _; _; _ ]
+  | Continue [ _; _; _; _ ]
+  | Continue [ _; _; _; _; _ ] -> result
+  | _ -> (
+      let size = List.length player_cards in
+      let other_type = getcardtype other in
+      match other_type with
+      | Single | Double -> Other
+      | _ -> if size < 10 then quad this other else Other)

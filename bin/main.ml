@@ -79,7 +79,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
       let input =
         if prev_turn = 2 && Ai.collab prev_cards = true then []
         else
-          match Ai.play fst_ai_cards prev_cards with
+          match Ai.play fst_ai_cards prev_cards player_cards with
           | Skip | Other -> []
           | Continue cards -> cards
       in
@@ -96,7 +96,7 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
       let input =
         if prev_turn = 1 && Ai.collab prev_cards = true then []
         else
-          match Ai.play snd_ai_cards prev_cards with
+          match Ai.play snd_ai_cards prev_cards player_cards with
           | Skip | Other -> []
           | Continue cards -> cards
       in
