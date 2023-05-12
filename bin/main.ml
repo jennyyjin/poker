@@ -16,7 +16,7 @@ let check_empty (str : string) = String.length str <> 0
 (** [play_game ai_cards player_cards prev_cards turn] runs the poker game,
     allowing player to put down cards *)
 let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
-    same_cards_count choice beginning =
+    same_cards_count choice beginning prev_turn =
   try
     let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
     if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then
@@ -69,48 +69,52 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
           match player_placed_cards with
           | [] ->
               play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1
-                (same_cards_count + 1) player_placed_cards 1
+                (same_cards_count + 1) player_placed_cards 1 (-1)
           | _ ->
               let prev_cards = index_to_num player_cards input in
               let player_cards = update_cards player_cards input in
               play_game fst_ai_cards snd_ai_cards player_cards prev_cards 1 0
-                player_placed_cards 1
+                player_placed_cards 1 0
     else if turn = 1 then
       let input =
-        match Ai.play fst_ai_cards prev_cards with
-        | Skip | Other -> []
-        | Continue cards -> cards
+        if prev_turn = 2 && Ai.collab prev_cards = true then []
+        else
+          match Ai.play fst_ai_cards prev_cards with
+          | Skip | Other -> []
+          | Continue cards -> cards
       in
       match input with
       | [] ->
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2
-            (same_cards_count + 1) input 1
+            (same_cards_count + 1) input 1 (-1)
       | _ ->
           let prev_cards = input in
           let fst_ai_cards = update_ai_cards fst_ai_cards input in
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 2 0 input
-            1
-    else
+            1 1
+    else if turn = 2 then
       let input =
-        match Ai.play snd_ai_cards prev_cards with
-        | Skip | Other -> []
-        | Continue cards -> cards
+        if prev_turn = 1 && Ai.collab prev_cards = true then []
+        else
+          match Ai.play snd_ai_cards prev_cards with
+          | Skip | Other -> []
+          | Continue cards -> cards
       in
       match input with
       | [] ->
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
-            (same_cards_count + 1) input 1
+            (same_cards_count + 1) input 1 (-1)
       | _ ->
           let prev_cards = input in
           let snd_ai_cards = update_ai_cards snd_ai_cards input in
           play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0 0 input
-            1
+            1 2
   with _ ->
     ANSITerminal.print_string [ ANSITerminal.red ]
       "\nYour input is invalid. Please try again.";
 
     play_game fst_ai_cards snd_ai_cards player_cards prev_cards 0
-      same_cards_count choice (-1)
+      same_cards_count choice (-1) (-1)
 
 let main () =
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWelcome to Poker.\n\n";
@@ -137,11 +141,12 @@ let main () =
   let snd_ai_cards = sorted b in
   let player_cards = sorted c in
   let prev_cards = [] in
+  let prev_turn = -1 in
   let turn = 0 in
   let same_cards_count = 0 in
   let choice = [] in
   let beginning = 0 in
   play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
-    same_cards_count choice beginning
+    same_cards_count choice beginning prev_turn
 
 let () = main ()

@@ -182,8 +182,59 @@ let make_fst_choice (cards : int list) : choice =
   else if List.length quad <> 0 then Continue (List.hd quad)
   else Continue [ List.hd cards ]
 
-(**[play this other] returns AI's decision based on its current cards and the
-   previous card *)
+(** [check_quad cards] returns true if the bomb is J or greater and false
+    otherwise*)
+let check_quad (cards : int list list) : bool =
+  match cards with
+  | [ [ c1; c2; c3; c4 ] ] -> c1 mod 13 > 7
+  | _ -> failwith "wrong pattern"
+
+(** [check_triple cards] returns true if the triple is J or greater and false
+    otherwise *)
+let check_triple (cards : int list list) : bool =
+  match cards with
+  | [ [ c1; c2; c3 ] ] -> c1 mod 13 > 7
+  | _ -> failwith "wrong pattern"
+
+(** [check_double cards] returns true if the double is K or greater and false
+    otherwise *)
+let check_double (cards : int list list) : bool =
+  match cards with
+  | [ [ c1; c2 ] ] -> c1 mod 13 > 9
+  | _ -> failwith "wrong pattern"
+
+(** [check_single card] returns true if the card is A or greater and false
+    otherwise *)
+let check_single (card : int list list) : bool =
+  match card with
+  | [ [ c ] ] -> c >= 53 || c mod 13 > 10
+  | _ -> failwith "wrong pattern"
+
+(** [check_straight cards] returns true if the straight is [10; J; Q; K; A] and
+    false otherwise *)
+let check_straight (cards : int list list) : bool =
+  let cards_format =
+    match cards with
+    | [ format ] -> format
+    | _ -> failwith "invalid format"
+  in
+  match sorted cards_format with
+  | [ c1; c2; c3; c4; c5 ] -> c1 mod 13 >= 7
+  | _ -> failwith "wrong pattern"
+
+(** [collab prev_cards] returns true if previous cards are large according to
+    the check functions defined above and false otherwise *)
+let collab (prev_cards : int list) : bool =
+  match split_cards prev_cards with
+  | [ quad; []; []; []; [] ] -> check_quad quad
+  | [ []; straight; []; []; [] ] -> check_straight straight
+  | [ []; []; []; double; [] ] -> check_double double
+  | [ []; []; []; []; single ] -> check_single single
+  | [ []; []; triple; _; _ ] -> check_triple triple
+  | _ -> false
+
+(** [play this other] returns AI's decision based on its current cards and the
+    previous card *)
 let play (this : int list) (other : int list) : choice =
   let splitted_cards = split_cards this in
   let size = List.length other in
