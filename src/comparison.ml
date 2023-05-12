@@ -283,7 +283,7 @@ let rec joker_pair (lst : int list) : choice =
     four cards of the same rank if there is a one-of-a-kind in [lst] and [Other]
     otherwise *)
 let rec triple_p_one (this : int list) (other : int list) : choice =
-  let t_cards = [ List.nth other 0; List.nth other 1; List.nth other 2 ] in
+  let t_cards = triple_helper other in
   match triple this t_cards with
   | Skip -> Other
   | Other -> Other
@@ -299,7 +299,7 @@ let rec triple_p_one (this : int list) (other : int list) : choice =
     four cards of the same rank if there is a two-of-a-kind in [lst] and [Other]
     otherwise *)
 let rec triple_p_double (this : int list) (other : int list) : choice =
-  let t_cards = [ List.nth other 0; List.nth other 1; List.nth other 2 ] in
+  let t_cards = triple_helper other in
   match triple this t_cards with
   | Skip -> Other
   | Other -> Other

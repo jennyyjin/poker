@@ -20,10 +20,9 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
   try
     let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
     if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then
-      ANSITerminal.print_string [ ANSITerminal.green ]
-        "\n\n Sorry, you lost! \n"
+      ANSITerminal.print_string [ ANSITerminal.red ] "\n\n Sorry, you lost! \n"
     else if List.length player_cards = 0 then
-      ANSITerminal.print_string [ ANSITerminal.red ]
+      ANSITerminal.print_string [ ANSITerminal.yellow ]
         "\n\n Congratulations! You won! \n";
     if
       List.length fst_ai_cards = 0

@@ -53,7 +53,7 @@ let indices (player_cards : int list) =
 (** Board Top*)
 let top_board (player_cards : int list) =
   let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
-  let board_lst = List.map (fun x -> "-----") new_player_cards in
+  let board_lst = List.map (fun x -> "-") new_player_cards in
   List.fold_left (fun acc x -> acc ^ x) "" board_lst
 
 (** Board Bottom*)
