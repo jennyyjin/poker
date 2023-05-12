@@ -59,9 +59,12 @@ let sorted_uniq (cards : int list) : int list =
 let rec single (this : int list) (other : int list) : choice =
   match this with
   | [] -> Other
-  | h :: t ->
-      if compare_card h (List.hd other) = 1 then Continue [ h ]
-      else single t other
+  | h :: t -> (
+      match other with
+      | [] -> Continue [ List.hd this ]
+      | _ ->
+          if compare_card h (List.hd other) = 1 then Continue [ h ]
+          else single t other)
 
 (** [remove_joker lst] returns a list of cards with jokers removed *)
 let rec remove_joker (lst : int list) =
@@ -215,9 +218,13 @@ let rec triple_p_one (this : int list) (other : int list) : choice =
   match triple this t_cards with
   | Skip -> Other
   | Other -> Other
-  | Continue cards ->
+  | Continue cards -> (
       let rest_cards = update_ai_cards this cards in
-      Continue (cards @ [ List.hd rest_cards ])
+      let s_card = single rest_cards [] in
+      match s_card with
+      | Other -> Other
+      | Continue [ i ] -> Continue (cards @ [ List.hd rest_cards ])
+      | _ -> Other)
 
 (** [triple_p_double this other] returns [Continue card] where card is a list of
     four cards of the same rank if there is a two-of-a-kind in [lst] and [Other]
@@ -258,6 +265,7 @@ let getcardtype (this : int list) : cardstype =
       let card4 = Helper.number_to_card (List.nth sort_this 3) in
       if card1 = card2 && card2 = card3 && card3 = card4 then Bomb
       else if card1 = card2 && card2 = card3 then TripleOne
+      else if card2 = card3 && card3 = card4 then TripleOne
       else Invalid
   | 5 ->
       let card1 = Helper.number_to_card (List.nth sort_this 0) in
@@ -334,4 +342,9 @@ let check_valid (cards1 : int list) (cards2 : int list) =
       if diff = GT then true else false
   | false ->
       let diff = compare_diff_type cards1 cards2 in
-      if diff = GT then true else false
+      if diff = GT then
+        let x = print_endline "true" in
+        true
+      else
+        let x = print_endline "false" in
+        false
