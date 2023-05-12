@@ -27,7 +27,7 @@ let rec find_three_list_aux (cards : int list) result =
 let find_three_list cards = find_three_list_aux cards []
 
 let find_four (cards : int list) =
-  let result = quad cards in
+  let result = find_quad cards in
   match result with
   | Other -> []
   | Continue [ c1; c2; c3; c4 ] -> [ c1; c2; c3; c4 ]
@@ -165,7 +165,22 @@ let split_cards cards =
   let single = find_single_list cards4 in
   result4 @ [ single ]
 
-let make_fst_choice (cards : int list) : choice = Continue [ List.hd cards ]
+let make_fst_choice (cards : int list) : choice =
+  let split = split_cards cards in
+  let quad = List.nth split 0 in
+  let straight = List.nth split 1 in
+  let triple = List.nth split 2 in
+  let double = List.nth split 3 in
+  let single = List.nth split 4 in
+  if List.length straight <> 0 then Continue (List.hd straight)
+  else if List.length triple <> 0 && List.length single <> 0 then
+    Continue (List.hd triple @ List.hd single)
+  else if List.length single <> 0 then Continue (List.hd single)
+  else if List.length triple <> 0 && List.length double <> 0 then
+    Continue (List.hd triple @ List.hd double)
+  else if List.length double <> 0 then Continue (List.hd double)
+  else if List.length quad <> 0 then Continue (List.hd quad)
+  else Continue [ List.hd cards ]
 
 (** [check_quad cards] returns true if the bomb is J or greater and false
     otherwise*)
@@ -225,10 +240,14 @@ let play (this : int list) (other : int list) : choice =
   let size = List.length other in
   match size with
   | 0 -> make_fst_choice this
-  | 1 -> single (List.flatten (List.nth splitted_cards 4)) other
+  | 1 -> (
+      let result = single (List.flatten (List.nth splitted_cards 4)) other in
+      match result with
+      | Continue [ c1 ] -> Continue [ c1 ]
+      | _ -> single (List.flatten (List.nth splitted_cards 2)) other)
   | 2 ->
-      let joker = List.hd other <> 52 && List.hd other <> 53 in
-      if joker then
+      let not_joker = List.hd other <> 52 && List.hd other <> 53 in
+      if not_joker then
         let result = double (List.flatten (List.nth splitted_cards 3)) other in
         match result with
         | Continue [ c1; c2 ] -> Continue [ c1; c2 ]
@@ -242,7 +261,7 @@ let play (this : int list) (other : int list) : choice =
           (List.flatten (List.nth splitted_cards 2)
           @ List.flatten (List.nth splitted_cards 4))
           other
-      else quad other
+      else quad this other
   | 5 ->
       let cardtype = getcardtype other in
       if cardtype = Fullhouse then

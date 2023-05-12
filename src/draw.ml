@@ -53,7 +53,7 @@ let indices (player_cards : int list) =
 (** Board Top*)
 let top_board (player_cards : int list) =
   let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
-  let board_lst = List.map (fun x -> "=====") new_player_cards in
+  let board_lst = List.map (fun x -> "-----") new_player_cards in
   List.fold_left (fun acc x -> acc ^ x) "" board_lst
 
 (** Board Bottom*)
@@ -106,15 +106,15 @@ let print_invalid_board (fst_ai_cards : int list) (snd_ai_cards : int list)
 
 let print_player_choice (player_choice : int list) =
   match player_choice with
-  | [] -> "Player: Skip" ^ "\n"
+  | [] -> "\n" ^ "Player: Skip" ^ "\n"
   | _ -> "\n" ^ "Player:" ^ print_cards player_choice ^ "\n"
 
 let print_ai_choice (ai_choice : int list) =
   match ai_choice with
-  | [] -> "AI Apple: Skip" ^ "\n"
+  | [] -> "\n" ^ "AI Apple: Skip" ^ "\n"
   | _ -> "\n" ^ "AI Apple:" ^ print_cards ai_choice ^ "\n"
 
 let print_ai2_choice (ai2_choice : int list) =
   match ai2_choice with
-  | [] -> "AI Banana: Skip" ^ "\n"
+  | [] -> "\n" ^ "AI Banana: Skip" ^ "\n"
   | _ -> "\n" ^ "AI Banana:" ^ print_cards ai2_choice ^ "\n"

@@ -173,44 +173,44 @@ let triple_tests =
 
 (** [quad_test name card expected_ouput] asserts the correctness and quality of
     the function [quad lst] in comparison*)
-let quad_test (name : string) (card : int list) (expected_output : choice) :
-    test =
-  name >:: fun _ -> assert_equal (quad card) expected_output
+let find_quad_test (name : string) (card : int list) (expected_output : choice)
+    : test =
+  name >:: fun _ -> assert_equal (find_quad card) expected_output
 
-let quad_tests =
+let find_quad_tests =
   [
-    quad_test
+    find_quad_test
       "When you have no card, you can't have a quad combination, so you can \
        only skip"
       [] Other;
-    quad_test
+    find_quad_test
       "When you have one card, you can't have a quad combination, so you can \
        only skip"
       [ 0 ] Other;
-    quad_test
+    find_quad_test
       "When you have two card, you can't have a quad combination, so you can \
        only skip"
       [ 10; 20 ] Other;
-    quad_test
+    find_quad_test
       "When you have three card, you can't have a quad combination, so you can \
        only skip"
       [ 0; 13; 26 ] Other;
-    quad_test
+    find_quad_test
       "You can continue if you posess any forms of quad card in your deck. In \
        this case [0;13;26;39] is the four 3s in poker"
       [ 0; 13; 26; 39 ]
       (Continue [ 0; 13; 26; 39 ]);
-    quad_test
+    find_quad_test
       "You can continue if you posess any forms of quad card in your deck. In \
        this case [1;14;27;40] is the four 4s in poker"
       [ 1; 14; 27; 40 ]
       (Continue [ 1; 14; 27; 40 ]);
-    quad_test
+    find_quad_test
       "You can continue if you posess any forms of quad card in your deck. In \
        this case [1;14;27;40] is the four 4s in poker"
       [ 1; 27; 28; 7; 2; 14; 4; 40 ]
       (Continue [ 1; 27; 14; 40 ]);
-    quad_test
+    find_quad_test
       "You can continue if you posess any forms of quad card in your deck. In \
        this case [1;14;27;40] is the four 4s in poker"
       [ 7; 12; 1; 3; 48; 9; 53; 17; 14; 6; 40; 2; 27 ]
@@ -226,7 +226,7 @@ let comparison_tests =
              single_tests;
              double_tests;
              triple_tests;
-             quad_tests;
+             find_quad_tests;
            ];
   ]
 
