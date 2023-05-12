@@ -50,7 +50,9 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
        player_cards prev_cards); *)
     if turn = 0 then
       print_string
-        "\nPlease input the indices of the cards you want to put down: \n";
+        "\n\
+         Please input the indices of the cards you want to put down or enter \
+         an empty space to skip: \n";
     if turn = 0 then
       let user_input = read_line () in
       if user_input = "quit" then exit 0
@@ -120,7 +122,8 @@ let main () =
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWelcome to Poker.\n\n";
   ANSITerminal.print_string [ ANSITerminal.cyan ] "Rules for the game: \n";
   ANSITerminal.print_string [ ANSITerminal.blue ]
-    "The game starts with you, and the turns will go in order You-AI-You-AI...\n\
+    "The game starts with you, and the turns will go in order \
+     You-AI1-AI2-You-AI1-AI2...\n\
      Each turn, each player is only allowed to place 0 cards (skip), 1 card, 2 \
      cards, 3 cards, 4 cards or 5 cards. \n\
      Card rank in increasing order: 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, 2, 🃟, 🃏\n\
@@ -133,7 +136,8 @@ let main () =
      Bombs can beat any non-bomb cards. \n\
      A pair of 🃟 🃏 is the most powerful bomb, and 4 cards of the same rank is \
      another type of bomb. \n\
-     The player that gets rid of all of their cards first wins!";
+     The player that gets rid of all of their cards first wins! Try to beat \
+     both AIs! You got this!";
   let deck = Assign.scrambled_list in
   let cards_group = split_in_three deck in
   let a, b, c = cards_group in
