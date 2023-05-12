@@ -19,11 +19,14 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
     same_cards_count choice beginning prev_turn =
   try
     let prev_cards = if same_cards_count mod 3 = 2 then [] else prev_cards in
-    if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then
-      ANSITerminal.print_string [ ANSITerminal.red ] "\n\n Sorry, you lost! \n"
+    if List.length fst_ai_cards = 0 || List.length snd_ai_cards = 0 then (
+      if turn = 0 then print_string (print_ai2_choice choice ^ "⬆️ Winner!")
+      else print_string (print_ai_choice choice ^ "⬆️ Winner!");
+      ANSITerminal.print_string [ ANSITerminal.red ]
+        "\n\n Sorry, you lost! \n(\\__/)\n(⁰̷̴͈꒨⁰̷̴͈)\n/ > \n")
     else if List.length player_cards = 0 then
       ANSITerminal.print_string [ ANSITerminal.yellow ]
-        "\n\n Congratulations! You won! \n";
+        "\n\n Congratulations! You won! \n (\\__/)\n( •̀ᴗ•́ )\n/ > \n";
     if
       List.length fst_ai_cards = 0
       || List.length snd_ai_cards = 0
