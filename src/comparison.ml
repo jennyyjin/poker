@@ -1,27 +1,45 @@
-open Assign
 open Play
+
 open Helper
+(** Module Comparison implements the compare_card function and compare mutiples
+    combinations of cards. Also checks the type of combinations.*)
 
-exception Empty
 exception Wrong
+(** Raised when the pattern of the cards are not the desired pattern *)
 
+(** Type choice represents the operations of putting down the deck. [Continue n]
+    represent you can continue by puttting down a certain deck. [Skip] means
+    that you don't have a certain deck and you want to Skip. [Other] means that
+    you dont have a deck of that pattern that is greater *)
 type choice =
   | Continue of int list
   | Skip
   | Other
 
+(** Type compare represents the relative strength of certain deck [EQ] means the
+    deck is equal. [LT] means the deck is smaller. [GT] means the deck if
+    greater [IV] means not a valid form of deck*)
 type compare =
   | EQ
   | LT
   | GT
   | IV
 
+(** Type cardtypes represents the card types in our game of poker. [Single]
+    means you have a single card of any rank. [Double] means you have two cards
+    in the same rank.[Triple] means you have three cards in the same rank.
+    [TripleOne] means you have three cards in the same rank with a [Single].
+    [Fullhouse] means you have three cards in the same rank with a
+    [Double].[Straight] means you have five cards in increasing rank regardless
+    of suits. [Bomb] means you have four cards in the same rank. [Joker] means
+    the two jokers. [Invalid] means you do not have a valid form of
+    combinations. [Empty] means you have a empty deck.*)
 type cardstype =
   | Single
   | Double
   | Triple
-  | Fullhouse
   | TripleOne
+  | Fullhouse
   | Straight
   | Bomb
   | Joker
@@ -244,8 +262,8 @@ let triple (this : int list) (other : int list) : choice =
   | [ c1; c2; c3 ] -> Continue [ c1; c2; c3 ]
   | _ -> raise Wrong
 
-(** [findquad lst] returns [Continue card] where card is a list of four cards of
-    the same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
+(** [find_quad lst] returns [Continue card] where card is a list of four cards
+    of the same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
 let rec find_quad (lst : int list) : choice =
   match sorted (remove_joker lst) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] -> Other
@@ -254,7 +272,7 @@ let rec find_quad (lst : int list) : choice =
       then Continue [ c1; c2; c3; c4 ]
       else find_quad (c2 :: c3 :: c4 :: t)
 
-(** [quad lst] returns [Continue card] where card is a list of four cards of the
+(** [quad_lst] returns [Continue card] where card is a list of four cards of the
     same rank if there is a four-of-a-kind in [lst] and [Other] otherwise *)
 let rec quad (lst : int list) (other : int list) : choice =
   let result = find_quad lst in
@@ -309,7 +327,7 @@ let rec triple_p_double (this : int list) (other : int list) : choice =
       | [] | [ _ ] -> Other
       | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
 
-(**[check_same_type this that] returns true if this and that have the same card
+(**[check_same_type this other] returns true if this and that have the same card
    type *)
 let check_same_type (this : int list) (other : int list) =
   let cards1 = getcardtype this in
@@ -317,7 +335,7 @@ let check_same_type (this : int list) (other : int list) =
   if cards1 = cards2 && cards1 != Invalid && cards2 != Invalid then true
   else false
 
-(**[compare_same_type this that] returns true if this is greater than that
+(**[compare_same_type this other] returns true if this is greater than that
    Precondition: this and that have the same card type *)
 let compare_same_type (this : int list) (other : int list) =
   let cardstype = getcardtype this in
@@ -336,7 +354,7 @@ let compare_same_type (this : int list) (other : int list) =
   | Empty -> GT
   | _ -> IV
 
-(**[compare_diff_type this that] returns true if this is greater than that
+(**[compare_diff_type this other] returns true if this is greater than that
    Precondition: this and that have different card types *)
 let compare_diff_type (this : int list) (other : int list) =
   let cardstype = getcardtype this in
@@ -350,7 +368,7 @@ let compare_diff_type (this : int list) (other : int list) =
     | Empty -> GT
     | Invalid -> IV
 
-(**[check_valid c1 c2] returns true if c1 is greater than c2*)
+(**[check_valid card1 card2] returns true if c1 is greater than c2*)
 let check_valid (cards1 : int list) (cards2 : int list) =
   let samecard = check_same_type cards1 cards2 in
   match samecard with

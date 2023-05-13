@@ -1,5 +1,8 @@
 open Comparison
+
 open Helper
+(** Module Draw draws the game borard and the representation of the cards to the
+    users*)
 
 let number_to_card (card_number : int) = Helper.number_to_card card_number
 let number_to_suit (card_number : int) = Helper.number_to_suit card_number

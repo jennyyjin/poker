@@ -1,6 +1,9 @@
 open Comparison
 open Helper
+
 open Play
+(**Module Ai implements the functionalities of the two AIs and their
+   cooperations.*)
 
 let rec find_two_list_aux (cards : int list) result =
   let fst = double_helper cards in

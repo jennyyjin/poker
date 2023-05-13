@@ -141,7 +141,7 @@ let main () =
      another type of bomb. \n\
      The player that gets rid of all of their cards first wins! Try to beat \
      both AIs! You got this!";
-  let deck = Assign.scrambled_list in
+  let deck = Assign.scrambled_list () in
   let cards_group = split_in_three deck in
   let a, b, c = cards_group in
   let fst_ai_cards = sorted a in
