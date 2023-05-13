@@ -8,7 +8,17 @@ test:
 
 run:
 	OCAMLRUNPARAM=b dune exec bin/main.exe
+	
+bisect: bisect-clean
+	-dune exec --instrument-with bisect_ppx --force test/main.exe
+	bisect-ppx-report html
 
+bisect-clean:
+	rm -rf _coverage bisect*.coverage
+
+zip:
+	rm -f poker.zip
+	zip -r poker.zip . -x@exclude.lst
 doc:
 	dune build @doc
 
