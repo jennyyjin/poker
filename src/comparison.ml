@@ -1,39 +1,19 @@
 open Play
-
 open Helper
-(** Module Comparison implements the compare_card function and compare mutiples
-    combinations of cards. Also checks the type of combinations.*)
 
 exception Wrong
-(** Raised when the pattern of the cards are not the desired pattern *)
 
-(** Type choice represents the operations of putting down the deck. [Continue n]
-    represent you can continue by puttting down a certain deck. [Skip] means
-    that you don't have a certain deck and you want to Skip. [Other] means that
-    you dont have a deck of that pattern that is greater *)
 type choice =
   | Continue of int list
   | Skip
   | Other
 
-(** Type compare represents the relative strength of certain deck [EQ] means the
-    deck is equal. [LT] means the deck is smaller. [GT] means the deck if
-    greater [IV] means not a valid form of deck*)
 type compare =
   | EQ
   | LT
   | GT
   | IV
 
-(** Type cardtypes represents the card types in our game of poker. [Single]
-    means you have a single card of any rank. [Double] means you have two cards
-    in the same rank.[Triple] means you have three cards in the same rank.
-    [TripleOne] means you have three cards in the same rank with a [Single].
-    [Fullhouse] means you have three cards in the same rank with a
-    [Double].[Straight] means you have five cards in increasing rank regardless
-    of suits. [Bomb] means you have four cards in the same rank. [Joker] means
-    the two jokers. [Invalid] means you do not have a valid form of
-    combinations. [Empty] means you have a empty deck.*)
 type cardstype =
   | Single
   | Double
@@ -46,10 +26,6 @@ type cardstype =
   | Invalid
   | Empty
 
-(** [compare_card x y] is a comparison function that output either -1, 0 or 1 to
-    denote the relative rank between cards. So we denote 0 and anything mod 13
-    to 0 as the samllest rank of the deck, and 53 as the largest Joker in the
-    deck *)
 let compare_card x y =
   if x = 53 then 1
   else if y = 53 then -1
@@ -160,8 +136,9 @@ let rec remove_joker_two (lst : int list) =
       if h = 12 || h = 25 || h = 38 || h = 51 then remove_joker_two t
       else h :: remove_joker_two t
 
-(** [straight this other] returns the first straight found on card list this *)
-let rec straight_helper (this : int list) (other : int list) : choice =
+(** [first_straight this other] returns the first straight found on card list
+    this *)
+let rec first_straight (this : int list) (other : int list) : choice =
   match sorted_uniq (remove_joker_two this) with
   | [] | [ _ ] | [ _; _ ] | [ _; _; _ ] | [ _; _; _; _ ] -> Other
   | c1 :: c2 :: c3 :: c4 :: c5 :: t ->
@@ -175,7 +152,7 @@ let rec straight_helper (this : int list) (other : int list) : choice =
         && (c4 mod 13) - (char_to_int (int_list_to_string other).[3] mod 13)
            = (c5 mod 13) - (char_to_int (int_list_to_string other).[4] mod 13)
       then Continue [ c1; c2; c3; c4; c5 ]
-      else straight_helper (c2 :: c3 :: c4 :: c5 :: t) other
+      else first_straight (c2 :: c3 :: c4 :: c5 :: t) other
 
 (** [straight this other] returns a straight to put down in response to the
     straight the other player just put down. Returns [Continue card] where card
@@ -185,7 +162,7 @@ let rec straight_helper (this : int list) (other : int list) : choice =
     numbers with no duplicates *)
 let rec straight (this : int list) (other : int list) : choice =
   let smallest = [ 0; 1; 2; 3; 4 ] in
-  let fst = straight_helper this smallest in
+  let fst = first_straight this smallest in
   match fst with
   | Other -> Other
   | Continue [ c1; c2; c3; c4; c5 ] -> (
@@ -201,19 +178,19 @@ let rec straight (this : int list) (other : int list) : choice =
         | [] -> Other)
   | _ -> Other
 
-(** [double_helper lst] only contains duplicates *)
-let rec double_helper (lst : int list) : int list =
+(** [dup_list lst] only contains duplicates *)
+let rec dup_list (lst : int list) : int list =
   match sorted (remove_joker lst) with
   | [] | [ _ ] -> []
   | c1 :: c2 :: t ->
-      if c1 mod 13 = c2 mod 13 then c1 :: c2 :: double_helper t
-      else double_helper (c2 :: t)
+      if c1 mod 13 = c2 mod 13 then c1 :: c2 :: dup_list t
+      else dup_list (c2 :: t)
 
 (** [double_lst this other] returns a list of a pair of cards to put down if
     there is a pair in [this] greater than [other] and returns an empty list
     otherwise *)
 let rec double_lst (this : int list) (other : int list) : int list =
-  match double_helper this with
+  match dup_list this with
   | [] | [ _ ] -> []
   | c1 :: c2 :: t ->
       if compare_card c1 (List.hd other) = 1 then [ c1; c2 ]
@@ -231,19 +208,19 @@ let double (this : int list) (other : int list) : choice =
   | [ c1; c2 ] -> Continue [ c1; c2 ]
   | _ -> raise Wrong
 
-(** [triple_helper lst] only contains triples *)
-let rec triple_helper (lst : int list) : int list =
+(** [threes_lst lst] only contains triples *)
+let rec three_lst (lst : int list) : int list =
   match sorted (remove_joker lst) with
   | [] | [ _ ] | [ _; _ ] -> []
   | c1 :: c2 :: c3 :: t ->
       if c1 mod 13 = c2 mod 13 && c2 mod 13 = c3 mod 13 then
-        [ c1; c2; c3 ] @ triple_helper t
-      else triple_helper (c2 :: c3 :: t)
+        [ c1; c2; c3 ] @ three_lst t
+      else three_lst (c2 :: c3 :: t)
 
 (** [triple_lst this other] returns a list of a triple to put down if there is a
     triple in [this] greater than [other] and returns an empty list otherwise *)
 let rec triple_lst (this : int list) (other : int list) : int list =
-  match triple_helper this with
+  match three_lst this with
   | [] | [ _ ] | [ _; _ ] -> []
   | c1 :: c2 :: c3 :: t ->
       if compare_card c1 (List.hd other) = 1 then [ c1; c2; c3 ]
@@ -301,7 +278,7 @@ let rec joker_pair (lst : int list) : choice =
     four cards of the same rank if there is a one-of-a-kind in [lst] and [Other]
     otherwise *)
 let rec triple_p_one (this : int list) (other : int list) : choice =
-  let t_cards = triple_helper other in
+  let t_cards = three_lst other in
   match triple this t_cards with
   | Skip -> Other
   | Other -> Other
@@ -317,13 +294,13 @@ let rec triple_p_one (this : int list) (other : int list) : choice =
     four cards of the same rank if there is a two-of-a-kind in [lst] and [Other]
     otherwise *)
 let rec triple_p_double (this : int list) (other : int list) : choice =
-  let t_cards = triple_helper other in
+  let t_cards = three_lst other in
   match triple this t_cards with
   | Skip -> Other
   | Other -> Other
   | Continue cards -> (
       let rest_cards = update_ai_cards this cards in
-      match double_helper rest_cards with
+      match dup_list rest_cards with
       | [] | [ _ ] -> Other
       | d1 :: d2 :: t -> Continue (cards @ [ d1 ] @ [ d2 ]))
 

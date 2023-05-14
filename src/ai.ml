@@ -6,7 +6,7 @@ open Play
    cooperations.*)
 
 let rec find_two_list_aux (cards : int list) result =
-  let fst = double_helper cards in
+  let fst = dup_list cards in
   match fst with
   | [] -> []
   | [ c1; c2 ] -> result @ [ [ c1; c2 ] ]
@@ -18,7 +18,7 @@ let rec find_two_list_aux (cards : int list) result =
 let find_two_list cards = find_two_list_aux cards []
 
 let rec find_three_list_aux (cards : int list) result =
-  let fst = triple_helper cards in
+  let fst = three_lst cards in
   match fst with
   | [] -> []
   | [ c1; c2; c3 ] -> result @ [ [ c1; c2; c3 ] ]
@@ -75,7 +75,7 @@ let count_single (cards : int list) =
   List.length new_lst
 
 let find_straight (cards : int list) =
-  let result = straight_helper cards [ 0; 1; 2; 3; 4 ] in
+  let result = first_straight cards [ 0; 1; 2; 3; 4 ] in
   match result with
   | Other -> []
   | Continue [ c1; c2; c3; c4; c5 ] -> [ c1; c2; c3; c4; c5 ]
