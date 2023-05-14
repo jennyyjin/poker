@@ -1,5 +1,4 @@
 open Play
-open Helper
 
 exception Wrong
 
@@ -58,31 +57,31 @@ let getcardtype (this : int list) : cardstype =
   | 0 -> Empty
   | 1 -> Single
   | 2 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
+      let card1 = Draw.number_to_card (List.nth sort_this 0) in
+      let card2 = Draw.number_to_card (List.nth sort_this 1) in
       if card1 = 0 && card2 = 0 then Joker
       else if card1 = card2 then Double
       else Invalid
   | 3 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
+      let card1 = Draw.number_to_card (List.nth sort_this 0) in
+      let card2 = Draw.number_to_card (List.nth sort_this 1) in
+      let card3 = Draw.number_to_card (List.nth sort_this 2) in
       if card1 = card2 && card2 = card3 then Triple else Invalid
   | 4 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
-      let card4 = Helper.number_to_card (List.nth sort_this 3) in
+      let card1 = Draw.number_to_card (List.nth sort_this 0) in
+      let card2 = Draw.number_to_card (List.nth sort_this 1) in
+      let card3 = Draw.number_to_card (List.nth sort_this 2) in
+      let card4 = Draw.number_to_card (List.nth sort_this 3) in
       if card1 = card2 && card2 = card3 && card3 = card4 then Bomb
       else if card1 = card2 && card2 = card3 then TripleOne
       else if card2 = card3 && card3 = card4 then TripleOne
       else Invalid
   | 5 ->
-      let card1 = Helper.number_to_card (List.nth sort_this 0) in
-      let card2 = Helper.number_to_card (List.nth sort_this 1) in
-      let card3 = Helper.number_to_card (List.nth sort_this 2) in
-      let card4 = Helper.number_to_card (List.nth sort_this 3) in
-      let card5 = Helper.number_to_card (List.nth sort_this 4) in
+      let card1 = Draw.number_to_card (List.nth sort_this 0) in
+      let card2 = Draw.number_to_card (List.nth sort_this 1) in
+      let card3 = Draw.number_to_card (List.nth sort_this 2) in
+      let card4 = Draw.number_to_card (List.nth sort_this 3) in
+      let card5 = Draw.number_to_card (List.nth sort_this 4) in
       if card1 = card2 && card2 = card3 && card4 = card5 then Fullhouse
       else if card1 = card2 && card3 = card4 && card4 = card5 then Fullhouse
       else if

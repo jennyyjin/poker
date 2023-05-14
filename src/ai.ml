@@ -1,5 +1,5 @@
 open Comparison
-open Helper
+open Draw
 
 open Play
 (**Module Ai implements the functionalities of the two AIs and their
