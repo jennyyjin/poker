@@ -89,7 +89,7 @@ let split_in_half_tests =
 let assign_card_tests =
   [ "test suite for split card" >::: List.flatten [ split_in_half_tests ] ]
 
-(**[compare_card_test name card1 card2 expected_outputs] ensures the correctness
+(**[compare_card_test name card1 card2 expected_output] ensures the correctness
    of the basic compare function in the system name compare *)
 let compare_card_test (name : string) (card1 : int) (card2 : int)
     (expected_output : int) : test =
@@ -107,8 +107,8 @@ let compare_card_tests =
     compare_card_test "compare_card 0 39 is 0" 0 39 0;
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[single_test name card1 card2 expected_output] ensures the correctness of the
+   single card that can be put down by the player *)
 let single_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (single card1 card2) expected_output
@@ -136,8 +136,8 @@ let single_tests =
       [ 14; 12; 13 ] [ 24 ] (Continue [ 12 ]);
   ]
 
-(**[double_test name card1 card2 expected_outputs] ensures the correctness of
-   the double card that can be put down by the player *)
+(**[double_test name card1 card2 expected_output] ensures the correctness of the
+   double card that can be put down by the player *)
 let double_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (double card1 card2) expected_output
@@ -166,8 +166,8 @@ let double_tests =
       (Continue [ 14; 1 ]);
   ]
 
-(**[triple_test name card1 card2 expected_outputs] ensures the correctness of
-   the double card that can be put down by the player *)
+(**[triple_test name card1 card2 expected_output] ensures the correctness of the
+   double card that can be put down by the player *)
 let triple_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (triple card1 card2) expected_output
@@ -387,8 +387,8 @@ let play_tests =
            [ update_ai_card_tests; update_card_tests; index_to_num_tests ];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[single_test name card1 card2 expected_output] ensures the correctness of the
+   single card that can be put down by the player *)
 let straight_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_straight_list card) expected_output
 
@@ -399,8 +399,8 @@ let straight_tests =
       [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ]; [ 2; 3; 4; 5 + 13; 6 ] ];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[single_test name card1 card2 expected_output] ensures the correctness of the
+   single card that can be put down by the player *)
 let two_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_two_list card) expected_output
 
@@ -412,8 +412,8 @@ let two_tests =
     two_test "two_test 2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[single_test name card1 card2 expected_output] ensures the correctness of the
+   single card that can be put down by the player *)
 let three_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_three_list card) expected_output
 
@@ -535,6 +535,80 @@ let valid_tests =
       [ 53; 52 ] [] true;
   ]
 
+(** [collab_test name cards expected_output] ensures the correctness of the
+    single card that can be put down by the player *)
+let collab_test (name : string) (cards : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (collab cards) expected_output
+
+let collab_tests =
+  [
+    collab_test "collab_test single card greater than A" [ 10 ] true;
+    collab_test "collab_test single card smaller than A" [ 1 ] false;
+    collab_test "collab_test double card greater than K" [ 12; 25 ] true;
+    collab_test "collab_test single card smaller than K" [ 3; 16 ] false;
+    collab_test "collab_test triple card greater than J" [ 8; 21; 34 ] true;
+    collab_test "collab_test triple card smaller than J" [ 3; 16; 29 ] false;
+    collab_test "collab_test triple with single smaller than J" [ 3; 16; 29; 1 ]
+      false;
+    collab_test "collab_test triple with single smaller than J" [ 1; 3; 16; 29 ]
+      false;
+    collab_test "collab_test triple with single greater than J" [ 1; 8; 21; 34 ]
+      true;
+    collab_test "collab_test triple with single greater than J" [ 8; 21; 34; 2 ]
+      true;
+    collab_test "collab_test triple with double smaller than J"
+      [ 3; 16; 29; 1; 14 ] false;
+    collab_test "collab_test triple with double smaller than J"
+      [ 1; 14; 3; 16; 29 ] false;
+    collab_test "collab_test triple with double greater than J"
+      [ 1; 14; 8; 21; 34 ] true;
+    collab_test "collab_test triple with double greater than J"
+      [ 8; 21; 34; 2; 15 ] true;
+    collab_test "collab_test straight greater than [10; J; Q; K; A]"
+      [ 7; 8; 9; 10; 11 ] true;
+    collab_test "collab_test straight smaller than [10; J; Q; K; A]"
+      [ 1; 2; 3; 4; 5 ] false;
+    collab_test "collab_test quad greater than J" [ 8; 21; 34; 47 ] true;
+    collab_test "collab_test quad smaller than J" [ 2; 15; 28; 41 ] false;
+  ]
+
+(** [collab_test name cards expected_output] ensures the correctness of the
+    single card that can be put down by the player *)
+let collab_test (name : string) (cards : int list) expected_output : test =
+  name >:: fun _ -> assert_equal (collab cards) expected_output
+
+let collab_tests =
+  [
+    collab_test "collab_test single card greater than A" [ 10 ] true;
+    collab_test "collab_test single card smaller than A" [ 1 ] false;
+    collab_test "collab_test double card greater than K" [ 12; 25 ] true;
+    collab_test "collab_test single card smaller than K" [ 3; 16 ] false;
+    collab_test "collab_test triple card greater than J" [ 8; 21; 34 ] true;
+    collab_test "collab_test triple card smaller than J" [ 3; 16; 29 ] false;
+    collab_test "collab_test triple with single smaller than J" [ 3; 16; 29; 1 ]
+      false;
+    collab_test "collab_test triple with single smaller than J" [ 1; 3; 16; 29 ]
+      false;
+    collab_test "collab_test triple with single greater than J" [ 1; 8; 21; 34 ]
+      true;
+    collab_test "collab_test triple with single greater than J" [ 8; 21; 34; 2 ]
+      true;
+    collab_test "collab_test triple with double smaller than J"
+      [ 3; 16; 29; 1; 14 ] false;
+    collab_test "collab_test triple with double smaller than J"
+      [ 1; 14; 3; 16; 29 ] false;
+    collab_test "collab_test triple with double greater than J"
+      [ 1; 14; 8; 21; 34 ] true;
+    collab_test "collab_test triple with double greater than J"
+      [ 8; 21; 34; 2; 15 ] true;
+    collab_test "collab_test straight greater than [10; J; Q; K; A]"
+      [ 7; 8; 9; 10; 11 ] true;
+    collab_test "collab_test straight smaller than [10; J; Q; K; A]"
+      [ 1; 2; 3; 4; 5 ] false;
+    collab_test "collab_test quad greater than J" [ 8; 21; 34; 47 ] true;
+    collab_test "collab_test quad smaller than J" [ 2; 15; 28; 41 ] false;
+  ]
+
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
@@ -551,6 +625,7 @@ let suite =
            s_tests;
            type_tests;
            valid_tests;
+           collab_tests;
          ]
 
 let _ = run_test_tt_main suite
