@@ -24,8 +24,8 @@ open Ai
     split functions to ensure that both users and AIs have the right amount of
     decks and putting down the right deck at a minimum.*)
 
-(**[string_of_int_pair lst1 lst2] is the printer functions that print out the
-   result of the split_in_half function that helps with debugging *)
+(** [string_of_int_pair lst1 lst2] is the printer functions that print out the
+    result of the split_in_half function that helps with debugging *)
 let string_of_int_pair (lst1, lst2, lst3) =
   let rec string_of_int_list lst =
     match lst with
@@ -35,30 +35,30 @@ let string_of_int_pair (lst1, lst2, lst3) =
   "(" ^ string_of_int_list lst1 ^ ", " ^ string_of_int_list lst2 ^ ","
   ^ string_of_int_list lst3 ^ ")"
 
-(**[split_in_half_test] name card_list expected_ouput asserts the corectness
-   output of split_in_half *)
+(** [split_in_half_test] name card_list expected_ouput asserts the corectness
+    output of split_in_half *)
 let split_in_half_test (name : string) (card_list : 'a list)
     (expected_output : 'a list * 'a list * 'a list) : test =
   name >:: fun _ ->
   assert_equal (split_in_three card_list) expected_output
     ~printer:string_of_int_pair
 
-(**[card_list1] is a list of integers from 0 to 53 inclusive that use to
-   represent the 54 cards in poker *)
+(** [card_list1] is a list of integers from 0 to 53 inclusive that use to
+    represent the 54 cards in poker *)
 let card_lst = List.init 54 (fun i -> i)
 
-(**[card_fst] is a list of even integers from 0 to 53 inclusive that use to
-   represent the card taken by user 1 *)
+(** [card_fst] is a list of even integers from 0 to 53 inclusive that use to
+    represent the card taken by user 1 *)
 let card_fst =
   [ 0; 3; 6; 9; 12; 15; 18; 21; 24; 27; 30; 33; 36; 39; 42; 45; 48 ]
 
-(**[card_snd] is a list of odd integers from 0 to 53 inclusive that use to
-   represent the card taken by user 2 *)
+(** [card_snd] is a list of odd integers from 0 to 53 inclusive that use to
+    represent the card taken by user 2 *)
 let card_snd =
   [ 1; 4; 7; 10; 13; 16; 19; 22; 25; 28; 31; 34; 37; 40; 43; 46; 49 ]
 
-(**[card_third] is a list of odd integers from 0 to 53 inclusive that use to
-   represent the card taken by user 3 *)
+(** [card_third] is a list of odd integers from 0 to 53 inclusive that use to
+    represent the card taken by user 3 *)
 let card_third =
   [
     2; 5; 8; 11; 14; 17; 20; 23; 26; 29; 32; 35; 38; 41; 44; 47; 50; 51; 52; 53;
@@ -89,8 +89,8 @@ let split_in_half_tests =
 let assign_card_tests =
   [ "test suite for split card" >::: List.flatten [ split_in_half_tests ] ]
 
-(**[compare_card_test name card1 card2 expected_outputs] ensures the correctness
-   of the basic compare function in the system name compare *)
+(** [compare_card_test name card1 card2 expected_output] ensures the correctness
+    of the basic compare function in the system name compare *)
 let compare_card_test (name : string) (card1 : int) (card2 : int)
     (expected_output : int) : test =
   name >:: fun _ ->
@@ -107,8 +107,8 @@ let compare_card_tests =
     compare_card_test "compare_card 0 39 is 0" 0 39 0;
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(** [single_test name card1 card2 expected_output] ensures the correctness of
+    the single card that can be put down by the player *)
 let single_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (single card1 card2) expected_output
@@ -136,8 +136,8 @@ let single_tests =
       [ 14; 12; 13 ] [ 24 ] (Continue [ 12 ]);
   ]
 
-(**[double_test name card1 card2 expected_outputs] ensures the correctness of
-   the double card that can be put down by the player *)
+(** [double_test name card1 card2 expected_output] ensures the correctness of
+    the double card that can be put down by the player *)
 let double_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (double card1 card2) expected_output
@@ -166,8 +166,8 @@ let double_tests =
       (Continue [ 14; 1 ]);
   ]
 
-(**[triple_test name card1 card2 expected_outputs] ensures the correctness of
-   the double card that can be put down by the player *)
+(** [triple_test name card1 card2 expected_output] ensures the correctness of
+    the double card that can be put down by the player *)
 let triple_test (name : string) (card1 : int list) (card2 : int list)
     (expected_output : choice) : test =
   name >:: fun _ -> assert_equal (triple card1 card2) expected_output
@@ -258,8 +258,8 @@ let comparison_tests =
            ];
   ]
 
-(**[string_of_int_list lst] is the printer functions that print out the result
-   of the update_ai_card_test function that helps with debugging *)
+(** [string_of_int_list lst] is the printer functions that print out the result
+    of the update_ai_card_test function that helps with debugging *)
 let string_of_int_list lst =
   let rec string_of_int_list lst =
     match lst with
@@ -268,9 +268,9 @@ let string_of_int_list lst =
   in
   "[" ^ string_of_int_list lst ^ "]"
 
-(**[update_ai_card_test name cuurent_cards output_cards expected_output] asserts
-   the quality and the correctness of the
-   function[update_ai_cards current_card output_cards]*)
+(** [update_ai_card_test name cuurent_cards output_cards expected_output]
+    asserts the quality and the correctness of the
+    function[update_ai_cards current_card output_cards]*)
 let update_ai_card_test (name : string) (current_cards : int list)
     (output_cards : int list) (expected_output : int list) : test =
   name >:: fun _ ->
@@ -308,9 +308,9 @@ let update_ai_card_tests =
       [ 5; 8; 1; 3; 20 ] [ 8; 1 ] [ 5; 3; 20 ];
   ]
 
-(**[update_card_test name current_cards output_cards expected_output] ensures
-   the quality and the correctness of the function
-   [update_cards current_cards output_cards] *)
+(** [update_card_test name current_cards output_cards expected_output] ensures
+    the quality and the correctness of the function
+    [update_cards current_cards output_cards] *)
 let update_card_test (name : string) (current_cards : int list)
     (output_cards : int list) (expected_output : int list) : test =
   name >:: fun _ ->
@@ -387,8 +387,8 @@ let play_tests =
            [ update_ai_card_tests; update_card_tests; index_to_num_tests ];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(** [single_test name card1 card2 expected_output] ensures the correctness of
+    the single card that can be put down by the player *)
 let straight_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_straight_list card) expected_output
 
@@ -399,8 +399,8 @@ let straight_tests =
       [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ]; [ 2; 3; 4; 5 + 13; 6 ] ];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[single_test name card1 card2 expected_output] ensures the correctness of the
+   single card that can be put down by the player *)
 let two_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_two_list card) expected_output
 
@@ -412,8 +412,8 @@ let two_tests =
     two_test "two_test 2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(** [single_test name card1 card2 expected_output] ensures the correctness of
+    the single card that can be put down by the player *)
 let three_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ -> assert_equal (find_three_list card) expected_output
 
@@ -446,14 +446,14 @@ let string_of_int_list_list_list lst =
   |> String.concat " || "
   |> Printf.sprintf "[[ [%s] ]]"
 
-(**[split_test name card expected_outputs] ensures the correctness of the
-   split_cards function *)
+(** [split_test name card expected_outputs] ensures the correctness of the
+    split_cards function *)
 let split_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ ->
   assert_equal (split_cards card) expected_output
     ~printer:string_of_int_list_list_list
 
-(**[split_tests] handle a list of split_test*)
+(** [split_tests] handle a list of split_test *)
 let split_tests =
   [
     split_test "A randome cards for testing split_cards"
@@ -492,13 +492,13 @@ let split_tests =
       [ []; []; []; []; [ [ 0; 13 ] ]; [ [ 53 ] ] ];
   ]
 
-(**[s_test name card other expected_outputs] ensures the correctness of the
-   straight function *)
+(** [s_test name card other expected_outputs] ensures the correctness of the
+    straight function *)
 let s_test (name : string) (card : int list) (other : int list) expected_output
     : test =
   name >:: fun _ -> assert_equal (straight card other) expected_output
 
-(**[s_tests] handle a list of s_test*)
+(** [s_tests] handle a list of s_test *)
 let s_tests =
   [
     s_test "There is no list greater than 0;1;2;3;4 in card"
@@ -510,25 +510,25 @@ let s_tests =
       (Continue [ 1; 2; 3; 4; 5 ]);
   ]
 
-(**[type_test name cards expected_outputs] ensures the correctness of the
-   getcardtype function *)
+(** [type_test name cards expected_outputs] ensures the correctness of the
+    getcardtype function *)
 let type_test (name : string) (cards : int list) expected_output : test =
   name >:: fun _ -> assert_equal (getcardtype cards) expected_output
 
-(**[type_tests] handle a list of type_test*)
+(** [type_tests] handle a list of type_test*)
 let type_tests =
   [
     type_test "52 is Single" [ 52 ] Single;
     type_test "52;53 is Joker" [ 52; 53 ] Joker;
   ]
 
-(**[valid_test name cards other expected_outputs] ensures the correctness of the
-   check_valid function *)
+(** [valid_test name cards other expected_outputs] ensures the correctness of
+    the check_valid function *)
 let valid_test (name : string) (cards : int list) (other : int list)
     expected_output : test =
   name >:: fun _ -> assert_equal (check_valid cards other) expected_output
 
-(**[valid_tests] handle a list of valid_test*)
+(** [valid_tests] handle a list of valid_test *)
 let valid_tests =
   [
     valid_test "Joker Bomb is valid when previous players skip their turns"
@@ -572,7 +572,8 @@ let collab_tests =
     collab_test "collab_test quad smaller than J" [ 2; 15; 28; 41 ] false;
   ]
 
-(**Let's run tests!*)
+(** Let's run tests! *)
+
 let suite =
   "test suite for Poker"
   >::: List.flatten
