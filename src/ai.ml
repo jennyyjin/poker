@@ -153,9 +153,9 @@ let find_jokers cards =
   in
   if List.length joker_cards = 2 then [ joker_cards ] else []
 
-(**[split_cards] cards split cards into 5 group:
-   [\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note [quad] is a
-   list of int list with all choices for quad*)
+(**[split_cards] cards split cards into 6 group:
+   [\[jokers\];\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note
+   [quad] is a list of int list with all choices for quad*)
 let split_cards cards =
   let jokers = find_jokers cards in
   let result0 = [] @ [ jokers ] in
@@ -249,7 +249,7 @@ let check_double (cards : int list list) : bool =
     otherwise *)
 let check_single (card : int list list) : bool =
   match card with
-  | [ [ c ] ] -> c >= 53 || c mod 13 > 10
+  | [ [ c ] ] -> c >= 52 || c mod 13 > 9
   | _ -> failwith "wrong pattern"
 
 (** [check_straight cards] returns true if the straight is [10; J; Q; K; A] and
@@ -267,12 +267,13 @@ let check_straight (cards : int list list) : bool =
 (** [collab prev_cards] returns true if previous cards are large according to
     the check functions defined above and false otherwise *)
 let collab (prev_cards : int list) : bool =
-  match split_cards prev_cards with
-  | [ quad; []; []; []; [] ] -> check_quad quad
-  | [ []; straight; []; []; [] ] -> check_straight straight
-  | [ []; []; []; double; [] ] -> check_double double
-  | [ []; []; []; []; single ] -> check_single single
-  | [ []; []; triple; _; _ ] -> check_triple triple
+  let card_type = getcardtype prev_cards in
+  match card_type with
+  | Bomb -> check_quad [ prev_cards ]
+  | Straight -> check_straight [ prev_cards ]
+  | Double -> check_double [ prev_cards ]
+  | Single -> check_single [ prev_cards ]
+  | Triple -> check_triple [ prev_cards ]
   | _ -> false
 
 (** [play this other] returns AI's decision based on its current cards and the
@@ -316,16 +317,26 @@ let play_helper (this : int list) (other : int list) : choice =
 
 let play (this : int list) (other : int list) (player_cards : int list) : choice
     =
-  let result = play_helper this other in
-  match result with
-  | Continue [ _ ]
-  | Continue [ _; _ ]
-  | Continue [ _; _; _ ]
-  | Continue [ _; _; _; _ ]
-  | Continue [ _; _; _; _; _ ] -> result
+  let cards_group = split_cards this in
+  let new_lst = List.filter (fun x -> List.length x <> 0) cards_group in
+  match new_lst with
+  | [ [ fst ]; [ snd ] ] ->
+      if getcardtype fst = Joker then Continue fst
+      else if getcardtype fst = Bomb then quad this other
+      else play_helper this other
   | _ -> (
-      let size = List.length player_cards in
-      let other_type = getcardtype other in
-      match other_type with
-      | Single | Double -> Other
-      | _ -> if size < 10 then quad this other else Other)
+      let result = play_helper this other in
+      match result with
+      | Continue [ _ ]
+      | Continue [ _; _ ]
+      | Continue [ _; _; _ ]
+      | Continue [ _; _; _; _ ]
+      | Continue [ _; _; _; _; _ ] -> result
+      | _ -> (
+          let size = List.length player_cards in
+          let other_type = getcardtype other in
+          if size < 3 then quad this other
+          else
+            match other_type with
+            | Single | Double -> Other
+            | _ -> if size < 10 then quad this other else Other))

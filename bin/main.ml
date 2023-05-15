@@ -23,10 +23,10 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
       if turn = 0 then print_string (print_ai2_choice choice ^ "⬆️ Winner!")
       else print_string (print_ai_choice choice ^ "⬆️ Winner!");
       ANSITerminal.print_string [ ANSITerminal.red ]
-        "\n\n Sorry, you lost! \n(\\__/)\n(⁰̷̴͈꒨⁰̷̴͈)\n/ > \n")
+        "\n\nSorry, you lost! \n(\\__/)\n(⁰̷̴͈꒨⁰̷̴͈)\n/ > \n")
     else if List.length player_cards = 0 then
       ANSITerminal.print_string [ ANSITerminal.yellow ]
-        "\n\n Congratulations! You won! \n (\\__/)\n( •̀ᴗ•́ )\n/ > \n";
+        "\n\nCongratulations! You won! \n (\\__/)\n( •̀ᴗ•́ )\n/ > \n";
     if
       List.length fst_ai_cards = 0
       || List.length snd_ai_cards = 0
@@ -54,8 +54,8 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
     if turn = 0 then
       print_string
         "\n\
-         Please input the indices of the cards you want to put down or enter \
-         an empty space to skip: \n";
+         Please input the indices of the cards you want to put down (separated \
+         by space) or enter an empty space to skip: \n";
     if turn = 0 then
       let user_input = read_line () in
       if user_input = "quit" then exit 0
@@ -82,7 +82,9 @@ let rec play_game fst_ai_cards snd_ai_cards player_cards prev_cards turn
                 player_placed_cards 1 0
     else if turn = 1 then
       let input =
-        if prev_turn = 2 && Ai.collab prev_cards = true then []
+        if
+          (prev_turn = 2 && Ai.collab prev_cards = true) || same_cards_count = 1
+        then []
         else
           match Ai.play fst_ai_cards prev_cards player_cards with
           | Skip | Other -> []

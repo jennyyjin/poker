@@ -71,19 +71,24 @@ let rec indices_list i =
 let indices (player_cards : int list) =
   let cards_size = List.length player_cards - 1 in
   let indices_l = indices_list cards_size in
-  List.fold_left (fun acc x -> acc ^ x) "" indices_l
+  let new_lst = List.fold_left (fun acc x -> acc ^ x) "" indices_l in
+  new_lst ^ " <- INDICES"
 
 (** Board Top*)
 let top_board (player_cards : int list) =
+  let size = List.length player_cards in
   let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
   let board_lst = List.map (fun x -> "-----") new_player_cards in
-  List.fold_left (fun acc x -> acc ^ x) "" board_lst
+  if size > 7 then List.fold_left (fun acc x -> acc ^ x) "" board_lst
+  else "----------------------------------"
 
 (** Board Bottom*)
 let bottom_board (player_cards : int list) =
+  let size = List.length player_cards in
   let new_player_cards = List.map (fun x -> string_of_int x) player_cards in
   let board_lst = List.map (fun x -> "=====") new_player_cards in
-  List.fold_left (fun acc x -> acc ^ x) "" board_lst
+  if size > 7 then List.fold_left (fun acc x -> acc ^ x) "" board_lst
+  else "=================================="
 
 (** [print_board ] takes current cards state and print the board when it's
     player's turn*)
@@ -96,8 +101,8 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ Printf.sprintf "Kozen's number of cards left: %i" (List.length snd_ai_cards)
   ^ "\n" ^ "Card(s) to beat: "
   ^ display_prev_cards prev_cards
-  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
-  ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
+  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "  <- CARDS"
+  ^ "\n" ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 (* ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards *)
 
 (** [print_fst_board ] takes the beginning cards state and print the board*)
@@ -108,8 +113,8 @@ let print_fst_board (fst_ai_cards : int list) (snd_ai_cards : int list)
       (List.length fst_ai_cards)
   ^ "\n"
   ^ Printf.sprintf "Kozen's number of cards left: %i" (List.length snd_ai_cards)
-  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
-  ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
+  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "  <- CARDS"
+  ^ "\n" ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 (* ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards *)
 
 (** [print_fst_board ] prints the board when the user has invalid input *)
@@ -121,15 +126,17 @@ let print_invalid_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "\n"
   ^ Printf.sprintf "Kozen's number of cards left: %i" (List.length snd_ai_cards)
   ^ "\n" ^ "Cards to beat: " ^ print_cards prev_cards ^ "\n"
-  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
+  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "  <- CARDS" ^ "\n"
   ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 
 (** [print_player_choice player_choice] outputs player's choice of cards to put
     down *)
 let print_player_choice (player_choice : int list) =
   match player_choice with
-  | [] -> "\n" ^ "You: Skip" ^ "\n"
-  | _ -> "\n" ^ "You: " ^ print_cards player_choice ^ "\n"
+  | [] -> "\n" ^ "Players' Decisions:\n" ^ "\n" ^ "You: Skip" ^ "\n"
+  | _ ->
+      "\n" ^ "Players' Decisions:\n" ^ "\n" ^ "You: "
+      ^ print_cards player_choice ^ "\n"
 
 (** [print_ai_choice ai_choice] outputs the first ai's choice of cards to put
     down *)
