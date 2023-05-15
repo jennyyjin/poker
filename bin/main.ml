@@ -133,14 +133,27 @@ let main () =
      cards, 3 cards, 4 cards or 5 cards. \n\
      Card rank in increasing order: 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, 2, 🃟, 🃏\n\
      The suit of cards doesn't matter. \n\
+     There are a total of eight patterns: Single, Pair, Triple, Triple with \
+     Single, Triple with Double, Straight, Normal Bomb (Quad), and Joker Bomb \
+     (Joker Pair). \n\
      1 single card can only beat other single cards of a smaller rank. \n\
      2 cards must be a pair of the same rank, and it can only beat other pairs \
      of a smaller rank. \n\
      3 cards must be a triple of the same rank, and it can only beat other \
      triples of a smaller rank. \n\
+     Triple with Single is a triple plus any single card. Its rank is \
+     determined by the triple, and the rank of the single card does not \
+     matter. \n\
+     Triple with Double is a triple plus any pair. Its rank is determined by \
+     the triple, and the rank of the pair does not matter. \n\
+     A straight is a sequence of five consecutive cards and can only beat a \
+     straight of a smaller rank. \n\
      Bombs can beat any non-bomb cards. \n\
-     A pair of 🃟 🃏 is the most powerful bomb, and 4 cards of the same rank is \
-     another type of bomb. \n\
+     4 cards of the same rank is a bomb, and a pair of 🃟 🃏 is the most \
+     powerful bomb (Joker Bomb). \n\
+     Players must follow the pattern of the previous player, with the \
+     exception of bombs. \n\
+     If all other players choose to skip, the player can start a new pattern. \n\
      The player that gets rid of all of their cards first wins! Try to beat \
      both AIs! You got this!";
   let deck = Assign.scrambled_list () in
