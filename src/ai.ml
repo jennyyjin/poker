@@ -1,9 +1,12 @@
 open Comparison
-open Helper
+open Draw
+
 open Play
+(**Module Ai implements the functionalities of the two AIs and their
+   cooperations.*)
 
 let rec find_two_list_aux (cards : int list) result =
-  let fst = double_helper cards in
+  let fst = dup_list cards in
   match fst with
   | [] -> []
   | [ c1; c2 ] -> result @ [ [ c1; c2 ] ]
@@ -15,7 +18,7 @@ let rec find_two_list_aux (cards : int list) result =
 let find_two_list cards = find_two_list_aux cards []
 
 let rec find_three_list_aux (cards : int list) result =
-  let fst = triple_helper cards in
+  let fst = three_lst cards in
   match fst with
   | [] -> []
   | [ c1; c2; c3 ] -> result @ [ [ c1; c2; c3 ] ]
@@ -72,7 +75,7 @@ let count_single (cards : int list) =
   List.length new_lst
 
 let find_straight (cards : int list) =
-  let result = straight_helper cards [ 0; 1; 2; 3; 4 ] in
+  let result = first_straight cards [ 0; 1; 2; 3; 4 ] in
   match result with
   | Other -> []
   | Continue [ c1; c2; c3; c4; c5 ] -> [ c1; c2; c3; c4; c5 ]
@@ -178,21 +181,47 @@ let split_cards cards =
   let single = find_single_list cards4 in
   result4 @ [ single ]
 
+(**[make_fst_choice cards] is the card that the ai will put down if the user
+   skips and they are free to put down any patterns*)
 let make_fst_choice (cards : int list) : choice =
   let split = split_cards cards in
+  let jokers = List.nth split 0 in
   let quad = List.nth split 1 in
   let straight = List.nth split 2 in
   let triple = List.nth split 3 in
   let double = List.nth split 4 in
   let single = List.nth split 5 in
-  if List.length straight <> 0 then Continue (List.hd straight)
+  let concat1 = straight @ triple @ double @ single in
+  let concat2 = triple @ double @ single in
+  if List.length quad <> 0 && List.length concat1 = 1 then
+    Continue (List.hd quad)
+  else if
+    List.length quad <> 0
+    && List.length triple <> 0
+    && List.length concat2 = 2
+    && List.hd concat2 = List.hd triple
+    && concat2 <> triple
+  then Continue (List.hd quad)
+  else if List.length jokers <> 0 && List.length concat1 = 1 then
+    Continue (List.hd jokers)
+  else if
+    List.length jokers <> 0
+    && List.length triple <> 0
+    && List.length concat2 = 2
+    && List.hd concat2 = List.hd triple
+    && concat2 <> triple
+  then Continue (List.hd jokers)
+  else if List.length straight <> 0 then Continue (List.hd straight)
   else if List.length triple <> 0 && List.length single <> 0 then
     Continue (List.hd triple @ List.hd single)
   else if List.length single <> 0 then Continue (List.hd single)
   else if List.length triple <> 0 && List.length double <> 0 then
     Continue (List.hd triple @ List.hd double)
+  else if List.length triple <> 0 then Continue (List.hd triple)
   else if List.length double <> 0 then Continue (List.hd double)
   else if List.length quad <> 0 then Continue (List.hd quad)
+  else if List.length jokers <> 0 && List.hd jokers = cards then
+    Continue (List.hd jokers)
   else Continue [ List.hd cards ]
 
 (** [check_quad cards] returns true if the bomb is J or greater and false

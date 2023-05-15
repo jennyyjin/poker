@@ -8,20 +8,21 @@ open Ai
 
 (**[string_of_int_pair lst1 lst2] is the printer functions that print out the
    result of the split_in_half function that helps with debugging *)
-let string_of_int_pair (lst1, lst2) =
+let string_of_int_pair (lst1, lst2, lst3) =
   let rec string_of_int_list lst =
     match lst with
     | [] -> ""
     | hd :: tl -> string_of_int hd ^ " " ^ string_of_int_list tl
   in
-  "(" ^ string_of_int_list lst1 ^ ", " ^ string_of_int_list lst2 ^ ")"
+  "(" ^ string_of_int_list lst1 ^ ", " ^ string_of_int_list lst2 ^ ","
+  ^ string_of_int_list lst3 ^ ")"
 
 (**[split_in_half_test] name card_list expected_ouput asserts the corectness
    output of split_in_half *)
 let split_in_half_test (name : string) (card_list : 'a list)
-    (expected_output : 'a list * 'a list) : test =
+    (expected_output : 'a list * 'a list * 'a list) : test =
   name >:: fun _ ->
-  assert_equal (split_in_half card_list) expected_output
+  assert_equal (split_in_three card_list) expected_output
     ~printer:string_of_int_pair
 
 (**[card_list1] is a list of integers from 0 to 53 inclusive that use to
@@ -29,33 +30,42 @@ let split_in_half_test (name : string) (card_list : 'a list)
 let card_lst = List.init 54 (fun i -> i)
 
 (**[card_fst] is a list of even integers from 0 to 53 inclusive that use to
-   represent half of the card taken by user 1 *)
-let card_fst = List.init 27 (fun i -> i * 2)
+   represent the card taken by user 1 *)
+let card_fst =
+  [ 0; 3; 6; 9; 12; 15; 18; 21; 24; 27; 30; 33; 36; 39; 42; 45; 48 ]
 
 (**[card_snd] is a list of odd integers from 0 to 53 inclusive that use to
-   represent half of the card taken by user 2 *)
-let card_snd = List.init 27 (fun i -> (i * 2) + 1)
+   represent the card taken by user 2 *)
+let card_snd =
+  [ 1; 4; 7; 10; 13; 16; 19; 22; 25; 28; 31; 34; 37; 40; 43; 46; 49 ]
+
+(**[card_third] is a list of odd integers from 0 to 53 inclusive that use to
+   represent the card taken by user 3 *)
+let card_third =
+  [
+    2; 5; 8; 11; 14; 17; 20; 23; 26; 29; 32; 35; 38; 41; 44; 47; 50; 51; 52; 53;
+  ]
 
 let split_in_half_tests =
   [
     split_in_half_test
       "Split no card should not have cards for the first person nor the second \
-       person "
-      [] ([], []);
+       person nor the third"
+      [] ([], [], []);
     split_in_half_test
       "Split one card should give the fst the first card and snd the second no \
-       card "
-      [ 0 ] ([ 0 ], []);
+       card and third no card"
+      [ 0 ] ([ 0 ], [], []);
     split_in_half_test
       "Split two cards should give the fst the first card and snd the second \
-       card "
-      [ 0; 1 ] ([ 0 ], [ 1 ]);
+       card and third no card"
+      [ 0; 1 ] ([ 0 ], [ 1 ], []);
     split_in_half_test
       "Split two cards should give the fst the first card and snd the second \
        card if the order has been change"
-      [ 1; 0 ] ([ 1 ], [ 0 ]);
-    split_in_half_test "First test for split cards in half " card_lst
-      (card_fst, card_snd);
+      [ 1; 0 ] ([ 1 ], [ 0 ], []);
+    split_in_half_test "Split the whole deck of poker in 3" card_lst
+      (card_fst, card_snd, card_third);
   ]
 
 let assign_card_tests =

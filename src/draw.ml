@@ -1,9 +1,26 @@
-open Comparison
-open Helper
+(** Module Draw draws the game borard and the representation of the cards to the
+    users*)
 
-let number_to_card (card_number : int) = Helper.number_to_card card_number
-let number_to_suit (card_number : int) = Helper.number_to_suit card_number
+(** [number_to_card x] convert x to the number on the card that is represented
+    by x *)
+let number_to_card (card_number : int) =
+  if card_number = 52 || card_number = 53 then 0
+  else
+    let x = (card_number + 3) mod 13 in
+    if x <> 0 then x else 13
 
+(** [number_to_suit x] convert x to the suit on the card that is represented by
+    x *)
+let number_to_suit (card_number : int) =
+  if card_number >= 0 && card_number < 13 then "♢"
+  else if card_number >= 13 && card_number < 26 then "♣"
+  else if card_number >= 26 && card_number < 39 then "♡"
+  else if card_number >= 39 && card_number < 52 then "♠"
+  else if card_number = 52 then "🃟 "
+  else "🃏"
+
+(** [print_card card_number] converts a card into a string format for better
+    display *)
 let print_card (card_number : int) =
   if number_to_card card_number = 0 then
     Printf.sprintf "|%s|" (number_to_suit card_number)
@@ -24,8 +41,14 @@ let print_card (card_number : int) =
       (number_to_suit card_number)
       (number_to_card card_number)
 
+(** [print_cards cards] returns a string of cards to beat *)
 let print_cards (cards : int list) =
   String.concat " " (List.map print_card cards)
+
+(** [display_prev_cards cards] returns a string to display cards to beat *)
+let display_prev_cards (cards : int list) =
+  if print_cards cards = "" then "None! You can start a new pattern"
+  else print_cards cards
 
 (** Guide on top of the board for player's turn*)
 let guide_player = "\n\nIt's your turn!\n"
@@ -71,8 +94,9 @@ let print_board (fst_ai_cards : int list) (snd_ai_cards : int list)
       (List.length fst_ai_cards)
   ^ "\n"
   ^ Printf.sprintf "Kozen's number of cards left: %i" (List.length snd_ai_cards)
-  ^ "\n" ^ "Card(s) to beat: " ^ print_cards prev_cards ^ "\n"
-  ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
+  ^ "\n" ^ "Card(s) to beat: "
+  ^ display_prev_cards prev_cards
+  ^ "\n" ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
   ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 (* ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards *)
 
@@ -88,7 +112,7 @@ let print_fst_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 (* ^ print_cards fst_ai_cards ^ "\n" ^ print_cards snd_ai_cards *)
 
-(** [print_fst_board ] print the board when the user has invalid input*)
+(** [print_fst_board ] prints the board when the user has invalid input *)
 let print_invalid_board (fst_ai_cards : int list) (snd_ai_cards : int list)
     (player_cards : int list) (prev_cards : int list) =
   top_board player_cards ^ "\n"
@@ -100,16 +124,22 @@ let print_invalid_board (fst_ai_cards : int list) (snd_ai_cards : int list)
   ^ "Your cards in hand: \n" ^ print_cards player_cards ^ "\n"
   ^ indices player_cards ^ "\n" ^ bottom_board player_cards ^ "\n"
 
+(** [print_player_choice player_choice] outputs player's choice of cards to put
+    down *)
 let print_player_choice (player_choice : int list) =
   match player_choice with
   | [] -> "\n" ^ "You: Skip" ^ "\n"
   | _ -> "\n" ^ "You: " ^ print_cards player_choice ^ "\n"
 
+(** [print_ai_choice ai_choice] outputs the first ai's choice of cards to put
+    down *)
 let print_ai_choice (ai_choice : int list) =
   match ai_choice with
   | [] -> "\n" ^ "AI Justin: Skip" ^ "\n"
   | _ -> "\n" ^ "AI Justin:" ^ print_cards ai_choice ^ "\n"
 
+(** [print_ai2_choice ai2_choice] outputs the second ai's choice of cards to put
+    down *)
 let print_ai2_choice (ai2_choice : int list) =
   match ai2_choice with
   | [] -> "\n" ^ "AI Kozen: Skip" ^ "\n"
