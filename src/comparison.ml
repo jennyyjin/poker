@@ -322,17 +322,21 @@ let check_same_type (this : int list) (other : int list) =
 let compare_same_type (this : int list) (other : int list) =
   let cardstype = getcardtype this in
   match cardstype with
-  | Single | Double | Triple | Straight | Bomb ->
+  | Single | Double | Triple | Bomb ->
       let diff = compare_card (List.hd this) (List.hd other) in
       if diff = -1 then LT else if diff = 1 then GT else EQ
+  | Straight ->
+      let diff =
+        compare_card (List.hd (sorted this)) (List.hd (sorted other))
+      in
+      if diff = -1 then LT else if diff = 1 then GT else EQ
   | Fullhouse | TripleOne ->
-      let diff3 = compare_card (List.hd this) (List.hd other) in
-      let diff2 = compare_card (List.nth this 3) (List.nth other 3) in
-      if diff3 = -1 then LT
-      else if diff3 = 1 then GT
-      else if diff2 = -1 then LT
-      else if diff2 = 1 then GT
-      else EQ
+      let diff3 =
+        compare_card
+          (List.hd (triple_helper this))
+          (List.hd (triple_helper other))
+      in
+      if diff3 = -1 then LT else if diff3 = 1 then GT else EQ
   | Empty -> GT
   | _ -> IV
 
