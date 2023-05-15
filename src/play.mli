@@ -4,7 +4,7 @@ val find_index : int -> int list -> int -> int
 (** [find_index element lst index] returns the index of the element in the list *)
 
 val check_not_index : int -> int list -> int list -> bool
-(** 忘记了*)
+(** [check_not_index e c i] checks to see if the list is in index*)
 
 val update_cards : int list -> int list -> int list
 (** [update_cards current_cards output_cards] returns the rest of the cards when

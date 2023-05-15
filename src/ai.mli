@@ -1,3 +1,6 @@
+(** Module Ai implements the functionalities of the two AIs and their
+    cooperations. *)
+
 val find_two_list : int list -> int list list
 (**[find_two_list cards] returns empty list if cards doesn't have Pair, and
    returns a list of all Pair in cards otherwise*)
