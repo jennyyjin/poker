@@ -572,43 +572,6 @@ let collab_tests =
     collab_test "collab_test quad smaller than J" [ 2; 15; 28; 41 ] false;
   ]
 
-(** [collab_test name cards expected_output] ensures the correctness of the
-    single card that can be put down by the player *)
-let collab_test (name : string) (cards : int list) expected_output : test =
-  name >:: fun _ -> assert_equal (collab cards) expected_output
-
-let collab_tests =
-  [
-    collab_test "collab_test single card greater than A" [ 10 ] true;
-    collab_test "collab_test single card smaller than A" [ 1 ] false;
-    collab_test "collab_test double card greater than K" [ 12; 25 ] true;
-    collab_test "collab_test single card smaller than K" [ 3; 16 ] false;
-    collab_test "collab_test triple card greater than J" [ 8; 21; 34 ] true;
-    collab_test "collab_test triple card smaller than J" [ 3; 16; 29 ] false;
-    collab_test "collab_test triple with single smaller than J" [ 3; 16; 29; 1 ]
-      false;
-    collab_test "collab_test triple with single smaller than J" [ 1; 3; 16; 29 ]
-      false;
-    collab_test "collab_test triple with single greater than J" [ 1; 8; 21; 34 ]
-      true;
-    collab_test "collab_test triple with single greater than J" [ 8; 21; 34; 2 ]
-      true;
-    collab_test "collab_test triple with double smaller than J"
-      [ 3; 16; 29; 1; 14 ] false;
-    collab_test "collab_test triple with double smaller than J"
-      [ 1; 14; 3; 16; 29 ] false;
-    collab_test "collab_test triple with double greater than J"
-      [ 1; 14; 8; 21; 34 ] true;
-    collab_test "collab_test triple with double greater than J"
-      [ 8; 21; 34; 2; 15 ] true;
-    collab_test "collab_test straight greater than [10; J; Q; K; A]"
-      [ 7; 8; 9; 10; 11 ] true;
-    collab_test "collab_test straight smaller than [10; J; Q; K; A]"
-      [ 1; 2; 3; 4; 5 ] false;
-    collab_test "collab_test quad greater than J" [ 8; 21; 34; 47 ] true;
-    collab_test "collab_test quad smaller than J" [ 2; 15; 28; 41 ] false;
-  ]
-
 (**Let's run tests!*)
 let suite =
   "test suite for Poker"
