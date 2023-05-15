@@ -2,8 +2,8 @@ open Comparison
 open Draw
 open Play
 
-(**Module Ai implements the functionalities of the two AIs and their
-   cooperations.*)
+(** Module Ai implements the functionalities of the two AIs and their
+    cooperations. *)
 
 let rec find_two_list_aux (cards : int list) result =
   let fst = dup_list cards in
@@ -153,9 +153,9 @@ let find_jokers cards =
   in
   if List.length joker_cards = 2 then [ joker_cards ] else []
 
-(**[split_cards] cards split cards into 6 group:
-   [\[jokers\];\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note
-   [quad] is a list of int list with all choices for quad*)
+(** [split_cards] cards split cards into 6 group:
+    [\[jokers\];\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note
+    [quad] is a list of int list with all choices for quad*)
 let split_cards cards =
   let jokers = find_jokers cards in
   let result0 = [] @ [ jokers ] in
@@ -181,8 +181,8 @@ let split_cards cards =
   let single = find_single_list cards4 in
   result4 @ [ single ]
 
-(**[make_fst_choice cards] is the card that the ai will put down if the user
-   skips and they are free to put down any patterns*)
+(** [make_fst_choice cards] is the card that the ai will put down if the user
+    skips and they are free to put down any patterns*)
 let make_fst_choice (cards : int list) : choice =
   let split = split_cards cards in
   let jokers = List.nth split 0 in
@@ -252,6 +252,32 @@ let check_single (card : int list list) : bool =
   | [ [ c ] ] -> c >= 52 || c mod 13 > 9
   | _ -> failwith "wrong pattern"
 
+(** [check_triple_single cards] returns true if Triple with Single has a rank of
+    J or greater false otherwise *)
+let check_triple_single (cards : int list list) : bool =
+  let cards_format =
+    match cards with
+    | [ format ] -> format
+    | _ -> failwith "invalid format"
+  in
+  match sorted cards_format with
+  | [ c1; c2; c3; c4 ] ->
+      if compare_card c1 c2 = 0 then c1 mod 13 > 7 else c2 mod 13 > 7
+  | _ -> failwith "wrong pattern"
+
+(** [check_triple_double cards] returns true if Triple with Double has a rank of
+    J or greater false otherwise *)
+let check_triple_double (cards : int list list) : bool =
+  let cards_format =
+    match cards with
+    | [ format ] -> format
+    | _ -> failwith "invalid format"
+  in
+  match sorted cards_format with
+  | [ c1; c2; c3; c4; c5 ] ->
+      if compare_card c2 c3 = 0 then c1 mod 13 > 7 else c3 mod 13 > 7
+  | _ -> failwith "wrong pattern"
+
 (** [check_straight cards] returns true if the straight is [10; J; Q; K; A] and
     false otherwise *)
 let check_straight (cards : int list list) : bool =
@@ -274,6 +300,8 @@ let collab (prev_cards : int list) : bool =
   | Double -> check_double [ prev_cards ]
   | Single -> check_single [ prev_cards ]
   | Triple -> check_triple [ prev_cards ]
+  | TripleOne -> check_triple_single [ prev_cards ]
+  | Fullhouse -> check_triple_double [ prev_cards ]
   | _ -> false
 
 (** [play this other] returns AI's decision based on its current cards and the

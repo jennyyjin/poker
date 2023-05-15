@@ -49,7 +49,7 @@ let rec remove_joker (lst : int list) =
   | [] -> []
   | h :: t -> if h = 52 || h = 53 then remove_joker t else h :: remove_joker t
 
-(**[getcardtype this] returns this's card type *)
+(** [getcardtype this] returns this's card type *)
 let getcardtype (this : int list) : cardstype =
   let sort_this = sorted this in
   let size = List.length sort_this in
