@@ -18,8 +18,6 @@ let rec shuffling rest_cards current_deck =
 
 let scrambled_list () = shuffling (card_list ()) []
 
-(* let scrambled_list () = List.sort (fun _ _ -> random 3 - 1) (card_list ()) *)
-
 let rec split_in_three lst =
   match lst with
   | [] -> ([], [], [])

@@ -1,7 +1,7 @@
 open Comparison
 open Draw
-
 open Play
+
 (**Module Ai implements the functionalities of the two AIs and their
    cooperations.*)
 

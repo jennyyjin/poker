@@ -6,6 +6,24 @@ open Assign
 open Play
 open Ai
 
+(** Our testing plan involves both automatic and manual testing methods to
+    ensure the correctness of the program. We automatically test the deck
+    patterns, split card features, and deck types through the program. For core
+    modules such as assign, comparison, and play, we extensively test them
+    through glass box testing.
+
+    We manually test the program's executables by interacting with the game
+    through the make run feature. Specifically, we test some functions in module
+    assign and nearly all functions in module play through manual testing using
+    make run. This is because module assign contains randomized shuffling
+    functions and module draw contains the drawings needed for the games on the
+    terminal.
+
+    Our testing plan demonstrates a systematic approach to ensure the
+    correctness of our program. We prioritize checking the card patterns and
+    split functions to ensure that both users and AIs have the right amount of
+    decks and putting down the right deck at a minimum.*)
+
 (**[string_of_int_pair lst1 lst2] is the printer functions that print out the
    result of the split_in_half function that helps with debugging *)
 let string_of_int_pair (lst1, lst2, lst3) =
