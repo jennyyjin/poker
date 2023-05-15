@@ -153,9 +153,6 @@ let find_jokers cards =
   in
   if List.length joker_cards = 2 then [ joker_cards ] else []
 
-(**[split_cards] cards split cards into 6 group:
-   [\[jokers\];\[quad\];\[straight\];\[triple\];\[double\];\[single\]], note
-   [quad] is a list of int list with all choices for quad*)
 let split_cards cards =
   let jokers = find_jokers cards in
   let result0 = [] @ [ jokers ] in
@@ -181,8 +178,6 @@ let split_cards cards =
   let single = find_single_list cards4 in
   result4 @ [ single ]
 
-(**[make_fst_choice cards] is the card that the ai will put down if the user
-   skips and they are free to put down any patterns*)
 let make_fst_choice (cards : int list) : choice =
   let split = split_cards cards in
   let jokers = List.nth split 0 in
@@ -276,8 +271,6 @@ let collab (prev_cards : int list) : bool =
   | Triple -> check_triple [ prev_cards ]
   | _ -> false
 
-(** [play this other] returns AI's decision based on its current cards and the
-    previous card *)
 let play_helper (this : int list) (other : int list) : choice =
   let splitted_cards = split_cards this in
   let size = List.length other in

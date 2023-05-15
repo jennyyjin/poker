@@ -446,11 +446,14 @@ let string_of_int_list_list_list lst =
   |> String.concat " || "
   |> Printf.sprintf "[[ [%s] ]]"
 
+(**[split_test name card expected_outputs] ensures the correctness of the
+   split_cards function *)
 let split_test (name : string) (card : int list) expected_output : test =
   name >:: fun _ ->
   assert_equal (split_cards card) expected_output
     ~printer:string_of_int_list_list_list
 
+(**[split_tests] handle a list of split_test*)
 let split_tests =
   [
     split_test "his"
@@ -488,12 +491,13 @@ let split_tests =
       [ []; []; []; []; [ [ 0; 13 ] ]; [ [ 53 ] ] ];
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[s_test name card other expected_outputs] ensures the correctness of the
+   straight function *)
 let s_test (name : string) (card : int list) (other : int list) expected_output
     : test =
   name >:: fun _ -> assert_equal (straight card other) expected_output
 
+(**[s_tests] handle a list of s_test*)
 let s_tests =
   [
     s_test "hi3" [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ] [ 0; 1; 2; 3; 4 ] Other;
@@ -503,22 +507,28 @@ let s_tests =
       (Continue [ 1; 2; 3; 4; 5 ]);
   ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[type_test name cards expected_outputs] ensures the correctness of the
+   getcardtype function *)
 let type_test (name : string) (cards : int list) expected_output : test =
   name >:: fun _ -> assert_equal (getcardtype cards) expected_output
 
+(**[type_tests] handle a list of type_test*)
 let type_tests =
   [ type_test "hi3" [ 52 ] Single; type_test "hi3" [ 52; 53 ] Joker ]
 
-(**[single_test name card1 card2 expected_outputs] ensures the correctness of
-   the single card that can be put down by the player *)
+(**[valid_test name cards other expected_outputs] ensures the correctness of the
+   check_valid function *)
 let valid_test (name : string) (cards : int list) (other : int list)
     expected_output : test =
   name >:: fun _ -> assert_equal (check_valid cards other) expected_output
 
+(**[valid_tests] handle a list of valid_test*)
 let valid_tests =
-  [ valid_test "hi3" [ 53; 52 ] [] true; valid_test "hi3" [ 52; 53 ] [] true ]
+  [
+    valid_test "Joker Bomb is valid when previous players skip their turns"
+      [ 53; 52 ] [] true;
+    valid_test "hi3" [ 52; 53 ] [] true;
+  ]
 
 (**Let's run tests!*)
 let suite =
