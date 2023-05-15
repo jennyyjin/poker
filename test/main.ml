@@ -394,7 +394,7 @@ let straight_test (name : string) (card : int list) expected_output : test =
 
 let straight_tests =
   [
-    straight_test "hi"
+    straight_test "straight_test 1"
       [ 0; 1; 2; 3; 4; 5 + 13; 6 ]
       [ [ 0; 1; 2; 3; 4 ]; [ 1; 2; 3; 4; 5 + 13 ]; [ 2; 3; 4; 5 + 13; 6 ] ];
   ]
@@ -406,10 +406,10 @@ let two_test (name : string) (card : int list) expected_output : test =
 
 let two_tests =
   [
-    two_test "hi1"
+    two_test "two_test 1"
       [ 0; 1; 2; 3; 4; 5 + 13; 5 + 26; 4 + 13 ]
       [ [ 4; 4 + 13 ]; [ 5 + 13; 5 + 26 ] ];
-    two_test "hi2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+    two_test "two_test 2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
   ]
 
 (**[single_test name card1 card2 expected_outputs] ensures the correctness of
@@ -419,10 +419,10 @@ let three_test (name : string) (card : int list) expected_output : test =
 
 let three_tests =
   [
-    three_test "hi3"
+    three_test "three_test 1"
       [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ]
       [ [ 0; 13; 26 ]; [ 1; 14; 27 ] ];
-    three_test "hi4" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+    three_test "three_test 2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
   ]
 
 let four_test (name : string) (card : int list) expected_output : test =
@@ -430,10 +430,10 @@ let four_test (name : string) (card : int list) expected_output : test =
 
 let four_tests =
   [
-    four_test "hi3"
+    four_test "four_test 1"
       [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ]
       [ [ 0; 13; 26; 39 ]; [ 1; 14; 27; 40 ] ];
-    four_test "hi4" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
+    four_test "four_test 2" [ 0; 1; 2; 3; 4; 5 + 13 ] [];
   ]
 
 let string_of_int_list_list_list lst =
@@ -456,7 +456,7 @@ let split_test (name : string) (card : int list) expected_output : test =
 (**[split_tests] handle a list of split_test*)
 let split_tests =
   [
-    split_test "his"
+    split_test "A randome cards for testing split_cards"
       [
         2;
         2 + 13;
@@ -487,7 +487,8 @@ let split_tests =
         [ [ 2; 2 + 13 ]; [ 4; 4 + 13 ]; [ 6; 6 + 26 ]; [ 10; 10 + 13 ] ];
         [ [ 8 + 13 ]; [ 11 ] ];
       ];
-    split_test "hiss" [ 0; 13; 53 ]
+    split_test "0;13;53 should be splitted in Pair 0;13 and Single 53"
+      [ 0; 13; 53 ]
       [ []; []; []; []; [ [ 0; 13 ] ]; [ [ 53 ] ] ];
   ]
 
@@ -500,8 +501,10 @@ let s_test (name : string) (card : int list) (other : int list) expected_output
 (**[s_tests] handle a list of s_test*)
 let s_tests =
   [
-    s_test "hi3" [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ] [ 0; 1; 2; 3; 4 ] Other;
-    s_test "hi3"
+    s_test "There is no list greater than 0;1;2;3;4 in card"
+      [ 0; 13; 26; 39; 1; 7; 14; 27; 40 ]
+      [ 0; 1; 2; 3; 4 ] Other;
+    s_test "1;2;3;4;5 is greater than 0;1;2;3;4 in card"
       [ 1; 2; 3; 4; 5; 7; 8; 9; 10 ]
       [ 0; 1; 2; 3; 4 ]
       (Continue [ 1; 2; 3; 4; 5 ]);
@@ -514,7 +517,10 @@ let type_test (name : string) (cards : int list) expected_output : test =
 
 (**[type_tests] handle a list of type_test*)
 let type_tests =
-  [ type_test "hi3" [ 52 ] Single; type_test "hi3" [ 52; 53 ] Joker ]
+  [
+    type_test "52 is Single" [ 52 ] Single;
+    type_test "52;53 is Joker" [ 52; 53 ] Joker;
+  ]
 
 (**[valid_test name cards other expected_outputs] ensures the correctness of the
    check_valid function *)
@@ -527,7 +533,6 @@ let valid_tests =
   [
     valid_test "Joker Bomb is valid when previous players skip their turns"
       [ 53; 52 ] [] true;
-    valid_test "hi3" [ 52; 53 ] [] true;
   ]
 
 (**Let's run tests!*)
