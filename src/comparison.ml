@@ -326,9 +326,7 @@ let compare_same_type (this : int list) (other : int list) =
       if diff = -1 then LT else if diff = 1 then GT else EQ
   | Fullhouse | TripleOne ->
       let diff3 =
-        compare_card
-          (List.hd (triple_helper this))
-          (List.hd (triple_helper other))
+        compare_card (List.hd (three_lst this)) (List.hd (three_lst other))
       in
       if diff3 = -1 then LT else if diff3 = 1 then GT else EQ
   | Empty -> GT
